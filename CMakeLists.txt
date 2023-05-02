@@ -21,6 +21,8 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
+        GPTSession.h GPTSession.cpp
+        NoteManager.h NoteManager.cpp
         ${TS_FILES}
 )
 

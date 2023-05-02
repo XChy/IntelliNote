@@ -72,3 +72,8 @@ Thumbs.db
 *.exe
 
 CMakeLists.txt.user
+.cache/clangd/index
+CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
