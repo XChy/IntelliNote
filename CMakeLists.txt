@@ -25,8 +25,13 @@ set(PROJECT_SOURCES
         NoteManager.h NoteManager.cpp
         Note.h Note.cpp
         AboutDialog.h AboutDialog.cpp aboutdialog.ui
+        TransSession.h TransSession.cpp
+        res.qrc
         ${TS_FILES}
 )
+
+qt_add_resources(QRC_FILES "res.qrc")
+SOURCE_GROUP("Resource Files" )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(IntelliNote

@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/3rdparty/mathjax.js</file>
+        <file>res/3rdparty/marked.js</file>
+        <file>res/3rdparty/markdown.css</file>
+        <file>res/index.html</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<head>
+  <link rel="stylesheet" type="text/css" href="3rdparty/markdown.css">
+  <script src="3rdparty/marked.js"></script>
+  <script src="qrc:/qtwebchannel/qwebchannel.js"></script>
+  <script>
+  MathJax = {
+    tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+    displayMath: [['$', '$'], ['\\(', '\\)']]
+    },
+    svg: {
+      fontCache: 'global'
+    }
+  };
+  </script>
+  <script id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+
+</head>
+<body>
+  <div id="placeholder"></div>
+
+  <script>
+  'use strict';
+
+  var placeholder = document.getElementById('placeholder');
+
+  var updateText = function(text) {
+      placeholder.innerHTML = marked(text);
+      MathJax.typeset();
+  }
+
+  new QWebChannel(qt.webChannelTransport,
+    function(channel) {
+      var content = channel.objects.content;
+      updateText(content.text);
+      content.textChanged.connect(updateText);
+    }
+  );
+  </script>
+
+</body>
+</html>
+
+
+
