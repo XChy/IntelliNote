@@ -32,9 +32,6 @@ MDViewer::MDViewer(QWidget* parent):QWebEngineView(parent),m_page(new PreviewPag
     m_page->setWebChannel(channel);
 
     setUrl(QUrl("qrc:/res/index.html"));
-    QFile file(":/res/index.html");
-    file.open(QFile::ReadOnly);
-    std::cout<<(QString(file.readLine()).toStdString());
 }
 
 void MDViewer::setText(const QString& text){
