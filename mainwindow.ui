@@ -40,14 +40,7 @@
          </sizepolicy>
         </property>
        </widget>
-      </widget>
-      <widget class="QTextBrowser" name="textBrowser">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
+       <widget class="MDViewer" name="viewer"/>
       </widget>
      </widget>
     </item>
@@ -89,6 +82,14 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MDViewer</class>
+   <extends>QFrame</extends>
+   <header location="global">MDViewer.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

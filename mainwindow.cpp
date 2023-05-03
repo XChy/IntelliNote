@@ -9,13 +9,9 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    QTextTableFormat format;
-    format.setBorderCollapse(true);
-    format.setCellPadding(21.2);
-    ui->textBrowser->mergeCurrentCharFormat(format.toCharFormat());
 
     connect(ui->textEdit, &QTextEdit::textChanged, [=]() {
-        ui->textBrowser->setMarkdown(ui->textEdit->toPlainText());
+        ui->viewer->setText(ui->textEdit->toPlainText());
     });
 }
 
