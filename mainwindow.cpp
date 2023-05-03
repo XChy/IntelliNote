@@ -1,16 +1,17 @@
 #include "mainwindow.h"
+#include <qglobal.h>
+#include <qobjectdefs.h>
+#include <qtextbrowser.h>
+#include <qtextedit.h>
 #include "./ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->textBrowser->setMarkdown("## XChy\n### abc\nas\n### b\nasdsad\n```C\nint a = 3\n```");
+    QObject::connect(ui->textEdit, &QTextEdit::textChanged, [=]() {
+        ui->textBrowser->setMarkdown(ui->textEdit->toMarkdown());
+    });
 }
 
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
-
+MainWindow::~MainWindow() { delete ui; }
