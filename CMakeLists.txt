@@ -23,6 +23,7 @@ set(PROJECT_SOURCES
         mainwindow.ui
         GPTSession.h GPTSession.cpp
         NoteManager.h NoteManager.cpp
+        Note.h Note.cpp
         ${TS_FILES}
 )
 
