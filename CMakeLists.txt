@@ -24,6 +24,7 @@ set(PROJECT_SOURCES
         GPTSession.h GPTSession.cpp
         NoteManager.h NoteManager.cpp
         Note.h Note.cpp
+        AboutDialog.h AboutDialog.cpp aboutdialog.ui
         ${TS_FILES}
 )
 

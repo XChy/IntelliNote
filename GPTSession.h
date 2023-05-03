@@ -23,7 +23,7 @@ class GPTSession : public QObject
     QString getAPIKey();
 
    signals:
-    void reponseReceived(QString response);
+    void responseReceived(QString response);
 
    private:
     QStringList responses;
