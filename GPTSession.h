@@ -24,7 +24,6 @@ class GPTSession : public QObject
 
    signals:
     void reponseReceived(QString response);
-
    private:
     QStringList responses;
     QString APIKey;
