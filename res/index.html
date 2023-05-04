@@ -46,15 +46,16 @@
 </head>
 <body>
   <div id="placeholder"></div>
-
   <script>
   'use strict';
 
   var placeholder = document.getElementById('placeholder');
 
   var updateText = function(text) {
-      placeholder.innerHTML = marked(text);
+
+      placeholder.innerHTML = text;
       MathJax.typeset();
+      placeholder.innerHTML = marked(placeholder.innerHTML);
   }
 
   new QWebChannel(qt.webChannelTransport,

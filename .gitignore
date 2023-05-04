@@ -79,3 +79,4 @@ cmake_install.cmake
 compile_commands.json
 IntelliNote_autogen
 IntelliNote
+res.qrc.depends

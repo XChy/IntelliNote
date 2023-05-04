@@ -14,33 +14,38 @@
    <string>IntelliNote</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <widget class="QSplitter" name="splitter_2">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QSplitter" name="splitter">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QSplitter" name="splitter">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+      <widget class="QListWidget" name="listWidget">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
-       <widget class="QListWidget" name="listWidget">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-       </widget>
-       <widget class="QTextEdit" name="textEdit">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-       </widget>
-       <widget class="MDViewer" name="viewer"/>
+      </widget>
+      <widget class="QPlainTextEdit" name="textEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+      <widget class="MDViewer" name="viewer">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="contextMenuPolicy">
+        <enum>Qt::CustomContextMenu</enum>
+       </property>
       </widget>
      </widget>
     </item>
@@ -52,7 +57,7 @@
      <x>0</x>
      <y>0</y>
      <width>876</width>
-     <height>28</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -60,11 +65,13 @@
      <string>文件</string>
     </property>
     <addaction name="action_2"/>
+    <addaction name="action_3"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
      <string>帮助</string>
     </property>
+    <addaction name="action_4"/>
     <addaction name="action"/>
    </widget>
    <addaction name="menu"/>
@@ -79,6 +86,16 @@
   <action name="action_2">
    <property name="text">
     <string>新建笔记</string>
+   </property>
+  </action>
+  <action name="action_3">
+   <property name="text">
+    <string>导入笔记</string>
+   </property>
+  </action>
+  <action name="action_4">
+   <property name="text">
+    <string>设置</string>
    </property>
   </action>
  </widget>
