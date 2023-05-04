@@ -4,5 +4,7 @@
         <file>res/3rdparty/marked.js</file>
         <file>res/3rdparty/markdown.css</file>
         <file>res/index.html</file>
+        <file>res/3rdparty/highlight.css</file>
+        <file>res/3rdparty/highlight.js</file>
     </qresource>
 </RCC>
