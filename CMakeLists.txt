@@ -8,11 +8,12 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 COMPONENTS Widgets WebChannel WebEngineWidgets LinguistTools REQUIRED)
-find_package(Qt6 REQUIRED COMPONENTS Widgets WebChannel WebEngineWidgets LinguistTools)
+find_package(QT NAMES Qt6 COMPONENTS Widgets WebChannel WebEngineWidgets Network LinguistTools REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Widgets WebChannel WebEngineWidgets Network LinguistTools)
 
 set(TS_FILES IntelliNote_zh_CN.ts)
 
@@ -68,6 +69,7 @@ endif()
 target_link_libraries(IntelliNote PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::WebEngineWidgets
     Qt${QT_VERSION_MAJOR}::WebChannel
+        Qt${QT_VERSION_MAJOR}::Network
 qmarkdowntextedit)
 
 set_target_properties(IntelliNote PROPERTIES
@@ -81,3 +83,4 @@ set_target_properties(IntelliNote PROPERTIES
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(IntelliNote)
 endif()
+
