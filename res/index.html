@@ -35,6 +35,8 @@
     inlineMath: [['$', '$'], ['\\(', '\\)']],
     displayMath: [['$$', '$$'], ['\\(', '\\)']]
     },
+      options: {
+      },
     svg: {
       fontCache: 'global'
     }
@@ -51,11 +53,20 @@
 
   var placeholder = document.getElementById('placeholder');
 
-  var updateText = function(text) {
+  function addSpan(matched){
+      return "<span>\n"+matched+"\n</span>";
+  }
 
-      placeholder.innerHTML = text;
-      MathJax.typeset();
-      placeholder.innerHTML = marked(placeholder.innerHTML);
+  var updateText = function(text) {
+    var inline_math = /^\$(.*)\$$/ms;
+    var display_math = /^\$\$(.*)\$\$$/ms;
+
+    text = text.replace(display_math, addSpan);
+    text = text.replace(inline_math, addSpan);
+
+    placeholder.innerHTML = marked(text);
+
+    MathJax.typeset();
   }
 
   new QWebChannel(qt.webChannelTransport,
@@ -69,6 +80,3 @@
 
 </body>
 </html>
-
-
-
