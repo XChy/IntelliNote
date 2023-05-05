@@ -6,6 +6,5 @@
         <file>res/index.html</file>
         <file>res/3rdparty/highlight.css</file>
         <file>res/3rdparty/highlight.js</file>
-        <file>res/3rdparty/marked_with_katex.js</file>
     </qresource>
 </RCC>
