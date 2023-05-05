@@ -2,15 +2,41 @@
 <html lang="en">
 <meta charset="utf-8">
 <head>
+
   <link rel="stylesheet" type="text/css" href="3rdparty/markdown.css">
   <script src="3rdparty/marked.js"></script>
   <script src="qrc:/qtwebchannel/qwebchannel.js"></script>
+
+ <link href="3rdparty/highlight.css" rel="stylesheet">
+  <script src="3rdparty/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
   <script>
+  var rendererMD = new marked.Renderer();
+    marked.setOptions({
+      renderer: rendererMD,
+      gfm: true,
+      tables: true,
+      breaks: false,
+      pedantic: false,
+      sanitize: false,
+      smartLists: true,
+      smartypants: false
+    });
+
+    marked.setOptions({
+        highlight: function (code) {
+        return hljs.highlightAuto(code).value;
+      }
+    });
+
   MathJax = {
     tex: {
     inlineMath: [['$', '$'], ['\\(', '\\)']],
-    displayMath: [['$', '$'], ['\\(', '\\)']]
+    displayMath: [['$$', '$$'], ['\\(', '\\)']]
     },
+      options: {
+      },
     svg: {
       fontCache: 'global'
     }
@@ -22,15 +48,25 @@
 </head>
 <body>
   <div id="placeholder"></div>
-
   <script>
   'use strict';
 
   var placeholder = document.getElementById('placeholder');
 
+  function addSpan(matched){
+      return "<span>\n"+matched+"\n</span>";
+  }
+
   var updateText = function(text) {
-      placeholder.innerHTML = marked(text);
-      MathJax.typeset();
+    var inline_math = /^\$(.*)\$$/ms;
+    var display_math = /^\$\$(.*)\$\$$/ms;
+
+    text = text.replace(display_math, addSpan);
+    text = text.replace(inline_math, addSpan);
+
+    placeholder.innerHTML = marked(text);
+
+    MathJax.typeset();
   }
 
   new QWebChannel(qt.webChannelTransport,
@@ -44,6 +80,3 @@
 
 </body>
 </html>
-
-
-

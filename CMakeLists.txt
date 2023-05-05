@@ -20,6 +20,8 @@ qt_add_resources(QRC_FILES "res.qrc"
     )
 SOURCE_GROUP("Resource Files" FILES "res.qrc")
 
+add_subdirectory(qmarkdowntextedit)
+
 set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp
@@ -63,7 +65,10 @@ else()
     qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 endif()
 
-target_link_libraries(IntelliNote PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::WebEngineWidgets Qt${QT_VERSION_MAJOR}::WebChannel)
+target_link_libraries(IntelliNote PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::WebEngineWidgets
+    Qt${QT_VERSION_MAJOR}::WebChannel
+qmarkdowntextedit)
 
 set_target_properties(IntelliNote PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
