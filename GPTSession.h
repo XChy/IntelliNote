@@ -15,7 +15,7 @@ class GPTSession : public QObject
      * Function:         void addPrompt(const QString& prompt)
      * Description:
      * add prompt to GPT, and emit the signal 'responseReceived(QString)'
-     * when GPT respond Return: Error:
+     * when GPT respond
      *****************************************************************************/
     void addPrompt(const QString &prompt);
 
@@ -23,7 +23,10 @@ class GPTSession : public QObject
     QString getAPIKey();
 
    signals:
+
     void reponseReceived(QString response);
+    void responseReceived(QString response);
+
    private:
     QStringList responses;
     QString APIKey;

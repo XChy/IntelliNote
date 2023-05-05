@@ -8,13 +8,17 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets LinguistTools REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets LinguistTools REQUIRED)
+find_package(QT NAMES Qt6 COMPONENTS Widgets WebChannel WebEngineWidgets LinguistTools REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Widgets WebChannel WebEngineWidgets LinguistTools)
 
 set(TS_FILES IntelliNote_zh_CN.ts)
+
+qt_add_resources(QRC_FILES "res.qrc"
+    )
+SOURCE_GROUP("Resource Files" FILES "res.qrc")
 
 set(PROJECT_SOURCES
         main.cpp
@@ -24,8 +28,13 @@ set(PROJECT_SOURCES
         GPTSession.h GPTSession.cpp
         NoteManager.h NoteManager.cpp
         Note.h Note.cpp
+        AboutDialog.h AboutDialog.cpp aboutdialog.ui
+        TransSession.h TransSession.cpp
+        MDViewer.h MDViewer.cpp
+        ${QRC_FILES}
         ${TS_FILES}
 )
+
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(IntelliNote
@@ -54,7 +63,7 @@ else()
     qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 endif()
 
-target_link_libraries(IntelliNote PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(IntelliNote PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::WebEngineWidgets Qt${QT_VERSION_MAJOR}::WebChannel)
 
 set_target_properties(IntelliNote PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

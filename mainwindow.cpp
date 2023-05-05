@@ -1,16 +1,17 @@
 #include "mainwindow.h"
-#include <qglobal.h>
-#include <qobjectdefs.h>
 #include <qtextbrowser.h>
+#include <qtextdocument.h>
 #include <qtextedit.h>
+#include <qtextformat.h>
 #include "./ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    QObject::connect(ui->textEdit, &QTextEdit::textChanged, [=]() {
-        ui->textBrowser->setMarkdown(ui->textEdit->toMarkdown());
+
+    connect(ui->textEdit, &QTextEdit::textChanged, [=]() {
+        ui->viewer->setText(ui->textEdit->toPlainText());
     });
 }
 
