@@ -28,7 +28,6 @@ void GPTSession::addPrompt(const QString &prompt)
     request.setRawHeader("Authorization", ("Bearer " + APIKey).toUtf8());
     // token means APIKey
     QNetworkReply *reply = manager->post(request, QByteArray());
-
     QObject::connect(reply, &QNetworkReply::finished, [reply, manager, this]() {
         if (reply->error() == QNetworkReply::NoError) {
             QString response = QString::fromUtf8(reply->readAll());
