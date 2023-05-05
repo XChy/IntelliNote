@@ -1,0 +1,73 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"qmarkdowntextedit/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 84,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 93,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "lib",
+			"paths" : 
+			[
+				"qmarkdowntextedit/Release/qmarkdowntextedit.lib"
+			],
+			"targetId" : "qmarkdowntextedit::@b5b1e400612699cb7b84",
+			"targetIndex" : 5,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "include",
+			"paths" : 
+			[
+				"qmarkdowntextedit/markdownhighlighter.h",
+				"qmarkdowntextedit/qmarkdowntextedit.h",
+				"qmarkdowntextedit/qplaintexteditsearchwidget.h"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "Unspecified",
+			"destination" : "share/pkgconfig",
+			"paths" : 
+			[
+				"cmake-build-debug/qmarkdowntextedit.pc"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "qmarkdowntextedit",
+		"source" : "qmarkdowntextedit"
+	}
+}

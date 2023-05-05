@@ -1,0 +1,10 @@
+^C:\USERS\SHENJIAWEI\CLIONPROJECTS\INTELLINOTE\CMAKE-BUILD-DEBUG\CMAKEFILES\4D6D60E81BC1C548472E25CE52E2C7A6\GENERATE.STAMP.RULE
+setlocal
+C:\Users\shenjiawei\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\223.8214.51\bin\cmake\win\bin\cmake.exe -SC:/Users/shenjiawei/CLionProjects/IntelliNote -BC:/Users/shenjiawei/CLionProjects/IntelliNote/cmake-build-debug --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/shenjiawei/CLionProjects/IntelliNote/cmake-build-debug/IntelliNote.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

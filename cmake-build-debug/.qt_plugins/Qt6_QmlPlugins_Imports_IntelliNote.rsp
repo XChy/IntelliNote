@@ -1,0 +1,9 @@
+-rootPath
+C:/Users/shenjiawei/CLionProjects/IntelliNote
+-cmake-output
+-output-file
+C:/Users/shenjiawei/CLionProjects/IntelliNote/cmake-build-debug/.qt_plugins/Qt6_QmlPlugins_Imports_IntelliNote.cmake
+-importPath
+C:/Users/shenjiawei/CLionProjects/IntelliNote/cmake-build-debug
+-importPath
+D:/Qt/6.5.0/msvc2019_64/./qml

@@ -4,7 +4,7 @@
 #include <QObject>
 
 static const char *default_api_key = "";
-
+static const int maxTokens = 100;
 class GPTSession : public QObject
 {
     Q_OBJECT
@@ -23,8 +23,11 @@ class GPTSession : public QObject
     QString getAPIKey();
 
    signals:
-
-    void reponseReceived(QString response);
+    /******************************************************************************
+     * Function:         void responseReceived(QString response)
+     * Description:
+     * emit this signal when GPT respond
+     *****************************************************************************/
     void responseReceived(QString response);
 
    private:
