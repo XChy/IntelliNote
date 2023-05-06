@@ -19,24 +19,20 @@ QString GPTSession::getAPIKey() { return APIKey; }
 void GPTSession::addPrompt(const QString &prompt)
 {
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    QUrl url("https://api.openai.com/v1/completions");
-    //    QUrlQuery params;
-    //    params.addQueryItem("prompt", prompt);
-    //    params.addQueryItem("max_tokens", QString::number(maxTokens));
-    //    url.setQuery(params);
+    QUrl url("https://api.openai.com/v1/chat/completions");
     QNetworkRequest request(url);
     // the QNetworkRequest class holds a request to be sent with
     // QNetworkAccessManager.
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", ("Bearer " + APIKey).toUtf8());
     // token means APIKey
-    QNetworkReply *reply =
-        manager->post(request, QString("{\n"
-                                       "\"model\" : \"text-davinci-003\","
-                                       " \"prompt\": \"%1\" "
-                                       "\n}")
-                                   .arg(prompt)
-                                   .toUtf8());
+    QNetworkReply *reply = manager->post(request, QString(R"({
+                                       "model" : "gpt-3.5-turbo",
+                                       "messages": [{"role": "user", "content": "%1"}]
+                                       })")
+                                                      .arg(prompt)
+                                                      .toUtf8());
+
     QObject::connect(reply, &QNetworkReply::finished, [reply, manager, this]() {
         if (reply->error() == QNetworkReply::NoError) {
             QString response = QString::fromUtf8(reply->readAll());
@@ -48,9 +44,11 @@ void GPTSession::addPrompt(const QString &prompt)
                            .value("choices")
                            .toArray()[0]
                            .toObject()
-                           .value("text")
-                           .toString()
-                           .remove(0, 2);
+                           .value("message")
+                           //.toArray()[0]
+                           .toObject()
+                           .value("content")
+                           .toString();
             emit responseReceived(response);
         } else {
             // Handle error

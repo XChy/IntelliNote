@@ -23,6 +23,8 @@ int main(int argc, char* argv[])
             }
         });
 
-    gptSession->addPrompt("Hello,there");
+    std::string s;
+    std::cin >> s;
+    gptSession->addPrompt(QString::fromStdString(s));
     return app.exec();
 }
