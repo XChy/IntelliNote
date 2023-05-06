@@ -5,6 +5,7 @@
 
 static const char *default_api_key = "";
 static const int maxTokens = 100;
+
 class GPTSession : public QObject
 {
     Q_OBJECT
@@ -20,7 +21,7 @@ class GPTSession : public QObject
     void addPrompt(const QString &prompt);
 
     void setAPIKey(const QString &apiKey);
-    QString getAPIKey();
+    QString getAPIKey() const;
 
    signals:
     /******************************************************************************

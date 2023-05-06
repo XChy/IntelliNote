@@ -14,7 +14,7 @@ GPTSession::GPTSession(QObject *parent)
 
 void GPTSession::setAPIKey(const QString &apiKey) { APIKey = apiKey; }
 
-QString GPTSession::getAPIKey() { return APIKey; }
+QString GPTSession::getAPIKey() const { return APIKey; }
 
 void GPTSession::addPrompt(const QString &prompt)
 {

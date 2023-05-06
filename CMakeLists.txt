@@ -48,6 +48,7 @@ set(PROJECT_SOURCES
     TransSession.cpp
     MDViewer.h
     MDViewer.cpp
+    NoteTreeModel.h NoteTreeModel.cpp
     ${QRC_FILES}
     ${TS_FILES})
 
