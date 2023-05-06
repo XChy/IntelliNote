@@ -8,16 +8,19 @@ int main(int argc, char* argv[])
     QApplication app(argc, argv);
     GPTSession* gptSession = new GPTSession(&app);
     gptSession->setAPIKey(
-        "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");
+        "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");
+
     printf("Connecting...");
 
     QObject::connect(
-        gptSession, &GPTSession::responseReceived, [](QString response) {
+        gptSession, &GPTSession::responseReceived, [&app](QString response) {
             if (response.isEmpty()) {
                 qWarning() << "Empty response received from the server";
+                app.exit(1);
                 // TODO: add error handling logic
             } else {
                 std::cout << response.toStdString();
+                app.exit(0);
             }
         });
 
