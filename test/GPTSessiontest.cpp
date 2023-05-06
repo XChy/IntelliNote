@@ -7,7 +7,8 @@ int main(int argc, char* argv[])
 {
     QApplication app(argc, argv);
     GPTSession* gptSession = new GPTSession(&app);
-    gptSession->setAPIKey("");
+    gptSession->setAPIKey(
+        "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");
     printf("Connecting...");
 
     QObject::connect(
