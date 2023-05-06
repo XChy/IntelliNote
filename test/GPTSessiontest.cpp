@@ -8,9 +8,8 @@ int main(int argc, char* argv[])
     QApplication app(argc, argv);
     GPTSession* gptSession = new GPTSession(&app);
     gptSession->setAPIKey(
-        "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");
-
-    printf("Connecting...");
+        "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");
+    printf("Connecting...\n");
 
     QObject::connect(
         gptSession, &GPTSession::responseReceived, [&app](QString response) {

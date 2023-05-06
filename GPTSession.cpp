@@ -32,7 +32,7 @@ void GPTSession::addPrompt(const QString &prompt)
     // token means APIKey
     QNetworkReply *reply =
         manager->post(request, QString("{\n"
-                                       "\"model\" : \"gpt-3.5-turbo\","
+                                       "\"model\" : \"text-davinci-003\","
                                        " \"prompt\": \"%1\" "
                                        "\n}")
                                    .arg(prompt)
