@@ -57,8 +57,19 @@
     <property name="title">
      <string>文件</string>
     </property>
+    <widget class="QMenu" name="menu_3">
+     <property name="title">
+      <string>导出为</string>
+     </property>
+     <addaction name="separator"/>
+     <addaction name="separator"/>
+     <addaction name="actionMarkdown"/>
+     <addaction name="actionPDF"/>
+     <addaction name="actionHTML"/>
+    </widget>
     <addaction name="action_2"/>
     <addaction name="action_3"/>
+    <addaction name="menu_3"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
@@ -89,6 +100,21 @@
   <action name="action_4">
    <property name="text">
     <string>设置</string>
+   </property>
+  </action>
+  <action name="actionMarkdown">
+   <property name="text">
+    <string>Markdown</string>
+   </property>
+  </action>
+  <action name="actionPDF">
+   <property name="text">
+    <string>PDF</string>
+   </property>
+  </action>
+  <action name="actionHTML">
+   <property name="text">
+    <string>HTML</string>
    </property>
   </action>
  </widget>

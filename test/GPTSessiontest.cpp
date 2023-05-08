@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
         });
 
     std::string s;
-    std::cin >> s;
-    gptSession->addPrompt(QString::fromStdString(s));
+    getline(std::cin, s);
+    gptSession->ask(QString::fromStdString(s));
     return app.exec();
 }

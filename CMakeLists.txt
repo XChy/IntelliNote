@@ -41,14 +41,15 @@ set(PROJECT_SOURCES
     NoteManager.cpp
     Note.h
     Note.cpp
-    AboutDialog.h
-    AboutDialog.cpp
-    aboutdialog.ui
     TransSession.h
     TransSession.cpp
     MDViewer.h
     MDViewer.cpp
-    NoteTreeModel.h NoteTreeModel.cpp
+    NoteTreeModel.h
+    NoteTreeModel.cpp
+    Dialogs/PromptGenerateDialog.h
+    Dialogs/PromptGenerateDialog.cpp
+    Dialogs/PromptGenerateDialog.ui
     ${QRC_FILES}
     ${TS_FILES})
 

@@ -1,14 +1,17 @@
 #include "GPTSession.h"
+#include <qnetworkaccessmanager.h>
 #include <QCoreApplication>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
+
 #include <QUrlQuery>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
 
 GPTSession::GPTSession(QObject *parent)
-    : QObject{parent}, APIKey(default_api_key)
+    : QObject{parent},
+      APIKey(default_api_key),
+      manager(new QNetworkAccessManager(this)),
+      reply(nullptr)
 {
 }
 
@@ -16,9 +19,8 @@ void GPTSession::setAPIKey(const QString &apiKey) { APIKey = apiKey; }
 
 QString GPTSession::getAPIKey() const { return APIKey; }
 
-void GPTSession::addPrompt(const QString &prompt)
+void GPTSession::ask(const QString &prompt)
 {
-    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     QUrl url("https://api.openai.com/v1/chat/completions");
     QNetworkRequest request(url);
     // the QNetworkRequest class holds a request to be sent with
@@ -26,14 +28,14 @@ void GPTSession::addPrompt(const QString &prompt)
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", ("Bearer " + APIKey).toUtf8());
     // token means APIKey
-    QNetworkReply *reply = manager->post(request, QString(R"({
+    reply = manager->post(request, QString(R"({
                                        "model" : "gpt-3.5-turbo",
                                        "messages": [{"role": "user", "content": "%1"}]
                                        })")
-                                                      .arg(prompt)
-                                                      .toUtf8());
+                                       .arg(prompt)
+                                       .toUtf8());
 
-    QObject::connect(reply, &QNetworkReply::finished, [reply, manager, this]() {
+    QObject::connect(reply, &QNetworkReply::finished, [this]() {
         if (reply->error() == QNetworkReply::NoError) {
             QString response = QString::fromUtf8(reply->readAll());
             // read the response from the json file and convert it to QString
@@ -74,6 +76,19 @@ void GPTSession::addPrompt(const QString &prompt)
             emit responseReceived("Error");
         }
         reply->deleteLater();
-        manager->deleteLater();
+        reply = nullptr;
     });
+}
+
+bool GPTSession::askable() const
+{
+    return reply == nullptr || !reply->isRunning();
+}
+
+void GPTSession::stopAsk()
+{
+    if (reply) {
+        reply->abort();
+        reply->deleteLater();
+    }
 }

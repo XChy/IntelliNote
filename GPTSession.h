@@ -1,9 +1,11 @@
 #ifndef GPTSESSION_H
 #define GPTSESSION_H
 
-#include <QObject>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 
-static const char *default_api_key = "";
+static const char *default_api_key =
+    "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";
 static const int maxTokens = 100;
 
 class GPTSession : public QObject
@@ -18,7 +20,10 @@ class GPTSession : public QObject
      * add prompt to GPT, and emit the signal 'responseReceived(QString)'
      * when GPT respond
      *****************************************************************************/
-    void addPrompt(const QString &prompt);
+    void ask(const QString &prompt);
+    bool askable() const;
+
+    void stopAsk();
 
     void setAPIKey(const QString &apiKey);
     QString getAPIKey() const;
@@ -34,6 +39,9 @@ class GPTSession : public QObject
    private:
     QStringList responses;
     QString APIKey;
+
+    QNetworkAccessManager *manager;
+    QNetworkReply *reply;
 };
 
 #endif  // GPTSESSION_H
