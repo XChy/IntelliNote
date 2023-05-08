@@ -35,6 +35,7 @@ class GPTSession : public QObject
      * emit this signal when GPT respond
      *****************************************************************************/
     void responseReceived(QString response);
+    void errorOccured(QString errorInfo);
 
    private:
     QStringList responses;

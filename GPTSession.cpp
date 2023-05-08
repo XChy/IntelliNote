@@ -51,6 +51,7 @@ void GPTSession::ask(const QString &prompt)
                            .toObject()
                            .value("content")
                            .toString();
+
             emit responseReceived(response);
         } else {
             // Handle error
@@ -73,7 +74,9 @@ void GPTSession::ask(const QString &prompt)
                     // TODO: add error handling logic
                     break;
             }
-            emit responseReceived("Error");
+            emit errorOccured(
+                tr("Network error \"%1\" occurred.\nError Json: %2")
+                    .arg(errorString, QString(data)));
         }
         reply->deleteLater();
         reply = nullptr;
@@ -88,7 +91,7 @@ bool GPTSession::askable() const
 void GPTSession::stopAsk()
 {
     if (reply) {
-        reply->abort();
+        reply->close();
         reply->deleteLater();
     }
 }

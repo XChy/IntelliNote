@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "Dialogs/PromptGenerateDialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -22,5 +23,7 @@ class MainWindow : public QMainWindow
 
    private:
     Ui::MainWindow *ui;
+
+    PromptGenerateDialog *generateDialog;
 };
 #endif  // MAINWINDOW_H

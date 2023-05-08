@@ -14,7 +14,9 @@
 #include "GPTSession.h"
 
 MainWindow::MainWindow(QWidget* parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow)
+    : QMainWindow(parent),
+      ui(new Ui::MainWindow),
+      generateDialog(new PromptGenerateDialog(this))
 {
     ui->setupUi(this);
     ui->splitter->setStretchFactor(0, 1);
@@ -28,24 +30,24 @@ MainWindow::MainWindow(QWidget* parent)
     ui->textEdit->setContextMenuPolicy(Qt::CustomContextMenu);
     QMenu* contextMenu = new QMenu(ui->textEdit);
 
-    QAction* copy_action = new QAction(tr("Copy"));
+    QAction* copy_action = new QAction(tr("复制"));
     connect(copy_action, &QAction::triggered, ui->textEdit,
             &QPlainTextEdit::copy);
 
-    QAction* paste_action = new QAction(tr("paste"));
+    QAction* paste_action = new QAction(tr("粘贴"));
     connect(paste_action, &QAction::triggered, ui->textEdit,
             &QPlainTextEdit::paste);
 
-    QAction* cut_action = new QAction(tr("cut"));
+    QAction* cut_action = new QAction(tr("剪切"));
     connect(cut_action, &QAction::triggered, ui->textEdit,
             &QPlainTextEdit::cut);
 
-    QAction* generate_content_action = new QAction(tr("Generate content for"));
+    QAction* generate_content_action = new QAction(tr("生成内容（Markdown）"));
     connect(generate_content_action, &QAction::triggered, this,
             &MainWindow::onGenerateContent);
 
-    QAction* generate_latex_action = new QAction(tr("Generate latex for"));
-    connect(generate_content_action, &QAction::triggered, this,
+    QAction* generate_latex_action = new QAction(tr("生成内容（Latex）"));
+    connect(generate_latex_action, &QAction::triggered, this,
             &MainWindow::onGenerateLatex);
 
     contextMenu->addActions({copy_action, paste_action, cut_action,
@@ -72,14 +74,23 @@ MainWindow::MainWindow(QWidget* parent)
 
 void MainWindow::onGenerateContent()
 {
-    PromptGenerateDialog* dialog = new PromptGenerateDialog(this);
-    dialog->setPromptPattern("%1");
-    int result = dialog->exec();
-    if (result == QDialog::Accepted) {
-        ui->textEdit->insertPlainText(dialog->getResult());
+    generateDialog->clear();
+    generateDialog->setPromptPattern("%1");
+    if (generateDialog->exec() == QDialog::Accepted) {
+        ui->textEdit->insertPlainText(generateDialog->getResult());
     }
 }
 
-void MainWindow::onGenerateLatex() {}
+void MainWindow::onGenerateLatex()
+{
+    generateDialog->clear();
+    generateDialog->setPromptPattern(tr(
+        "请根据我的下列要求给出对应的纯latex格式的数学式子:%1,"
+        "你的回答中请不要附加其他内容，直接把公式告诉我就好，也不需要有对于公式"
+        "的阐释"));
+    if (generateDialog->exec() == QDialog::Accepted) {
+        ui->textEdit->insertPlainText(generateDialog->getResult());
+    }
+}
 
 MainWindow::~MainWindow() { delete ui; }

@@ -1,6 +1,7 @@
 #include "PromptGenerateDialog.h"
 #include <qpushbutton.h>
 #include <QMessageBox>
+#include <QClipboard>>
 #include "ui_PromptGenerateDialog.h"
 
 PromptGenerateDialog::PromptGenerateDialog(QWidget *parent)
@@ -15,11 +16,24 @@ PromptGenerateDialog::PromptGenerateDialog(QWidget *parent)
     connect(ui->stopButton, &QPushButton::pressed, this,
             &PromptGenerateDialog::onStop);
 
+    connect(ui->copyButton, &QPushButton::pressed, [this](){
+        QApplication::clipboard()->setText(result);
+    });
+
     connect(gptSession, &GPTSession::responseReceived,
             [this](const QString &response) {
                 result = response;
                 ui->generateButton->setEnabled(true);
                 ui->previewer->setText(response);
+            });
+
+    connect(gptSession, &GPTSession::errorOccured,
+            [this](const QString &errorMessage) {
+                result = "";
+                QMessageBox::critical(
+                    NULL, tr("Failed"),
+                    tr("Failed to generate\n%1").arg(errorMessage));
+                ui->generateButton->setEnabled(true);
             });
 }
 
@@ -29,9 +43,8 @@ void PromptGenerateDialog::onGenerate()
         gptSession->ask(promptPattern.arg(ui->plainTextEdit->toPlainText()));
         ui->generateButton->setDisabled(true);
     } else {
-        QMessageBox::critical(NULL, "critical", "GPT is still generating",
-                              QMessageBox::Yes | QMessageBox::No,
-                              QMessageBox::Yes);
+        QMessageBox::critical(NULL, tr("Cannot generate"),
+                              tr("GPT is still generating"));
     }
 }
 
