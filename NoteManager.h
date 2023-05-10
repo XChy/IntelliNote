@@ -1,6 +1,7 @@
 #ifndef NOTEMANAGER_H
 #define NOTEMANAGER_H
 
+#include <qhash.h>
 #include <qlist.h>
 #include <QObject>
 #include "Note.h"
@@ -13,10 +14,23 @@ class NoteManager : public QObject
 
     /******************************************************************************
      * NoteDirectory is the default directory where notes lies in
+     * default value may be
+     * QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)?
      *****************************************************************************/
 
-    void setNoteDirectory(const QString &dir);
-    QString getNoteDirectory();
+    void setNotesDirectory(const QString &dir);
+    QString getNotesDirectory() const;
+
+    /******************************************************************************
+     * Function: readAll
+     * Description:
+     * read all notes, directories and tags
+     * if the directory for all notes does not exist, create it
+     * Return:
+     * 0 : succeed
+     * 1 : fail
+     *****************************************************************************/
+    int readAll();
 
     /******************************************************************************
      * Function: createNote
@@ -27,6 +41,15 @@ class NoteManager : public QObject
      *****************************************************************************/
 
     int createNote(const Note &note);
+
+    /******************************************************************************
+     * Function: importNote
+     * Return:
+     * 0 : succeed
+     * 1 : note has exist
+     * 2 : other exceptions
+     *****************************************************************************/
+    int importNote(const Note &note, const QString &note_content);
 
     /******************************************************************************
      * Function: removeNote
@@ -67,7 +90,7 @@ class NoteManager : public QObject
      * Function: allDirs
      * Return: all directories (read local if needed)
      *****************************************************************************/
-    QList<Note> allDirs();
+    QList<QString> allDirs();
 
     /******************************************************************************
      * Function: allDirs
@@ -93,7 +116,10 @@ class NoteManager : public QObject
     bool hasCached;
 
     QList<Note> cachedNotes;
-    QString noteDirectory;
+    QHash<QString, QList<Note> > dirToNotes;
+    QHash<QString, QList<Note> > tagToNotes;
+
+    QString notesDirectory;
 };
 
 #endif  // NOTEMANAGER_H

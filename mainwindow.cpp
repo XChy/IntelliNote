@@ -84,10 +84,14 @@ void MainWindow::onGenerateContent()
 void MainWindow::onGenerateLatex()
 {
     generateDialog->clear();
-    generateDialog->setPromptPattern(tr(
-        "请根据我的下列要求给出对应的纯latex格式的数学式子:%1,"
-        "你的回答中请不要附加其他内容，直接把公式告诉我就好，也不需要有对于公式"
-        "的阐释"));
+    // generateDialog->setPromptPattern(tr(
+    //"请根据我的下列要求给出对应的纯latex格式的数学式子:%1,"
+    //"你的回答中请不要附加其他内容，直接把公式告诉我就好，也不需要有对于公式"
+    //"的阐释"));
+    generateDialog->setPromptPattern(
+        tr("Please generate pure latex code surrounded with $ without "
+           "explanation as described "
+           "below:\\n%1\\n ."));
     if (generateDialog->exec() == QDialog::Accepted) {
         ui->textEdit->insertPlainText(generateDialog->getResult());
     }
