@@ -119,3 +119,5 @@ class NoteManager : public QObject
 
     QString notesDirectory;
 };
+
+#endif  //
