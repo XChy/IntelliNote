@@ -1,7 +1,7 @@
 #include "PromptGenerateDialog.h"
 #include <qpushbutton.h>
 #include <QMessageBox>
-#include <QClipboard>>
+#include <QClipboard>
 #include "ui_PromptGenerateDialog.h"
 
 PromptGenerateDialog::PromptGenerateDialog(QWidget *parent)

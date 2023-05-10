@@ -45,8 +45,8 @@ set(PROJECT_SOURCES
     TransSession.cpp
     MDViewer.h
     MDViewer.cpp
-    NoteTreeModel.h
-    NoteTreeModel.cpp
+#    NoteTreeModel.h
+#    NoteTreeModel.cpp
     Dialogs/PromptGenerateDialog.h
     Dialogs/PromptGenerateDialog.cpp
     Dialogs/PromptGenerateDialog.ui
@@ -66,7 +66,18 @@ if(BUILD_TEST)
             Qt${QT_VERSION_MAJOR}::Network
             qmarkdowntextedit)
 
+  qt_add_executable(TEST_TransSession MANUAL_FINALIZATION TransSession.cpp
+          test/TransSessiontest.cpp)
+  target_link_libraries(
+          TEST_TransSession
+          PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
+          Qt${QT_VERSION_MAJOR}::WebEngineWidgets
+          Qt${QT_VERSION_MAJOR}::WebChannel
+          Qt${QT_VERSION_MAJOR}::Network
+          qmarkdowntextedit)
+
   add_test(NAME GPTSession_Test COMMAND $<TARGET_FILE:TEST_GPTSession>)
+  add_test(NAME TransSession_Test COMMAND $<TARGET_FILE:TEST_TransSession>)
 endif()
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

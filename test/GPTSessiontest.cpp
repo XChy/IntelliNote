@@ -10,7 +10,7 @@ int main(int argc, char* argv[])
     gptSession->setAPIKey(
         "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");
     printf("Connecting...\n");
-
+    QString str = QString::fromLocal8Bit("中文");
     QObject::connect(
         gptSession, &GPTSession::responseReceived, [&app](QString response) {
             if (response.isEmpty()) {
