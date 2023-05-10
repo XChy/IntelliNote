@@ -90,3 +90,4 @@ TEST_GPTSession_autogen
 Testing/Temporary
 CTestTestfile.cmake
 TEST_GPTSession
+TEST_TransSession_autogen

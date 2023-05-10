@@ -81,45 +81,41 @@ class NoteManager : public QObject
 
     /******************************************************************************
      * Function: getNotes
-     * Return: if not cached, read from local files, else return what you cache.
+     * Return: if not cached, read from local files
      * Error:
      *****************************************************************************/
-    QList<Note> allNotes();
+    QList<Note> allNotes() const;
 
     /******************************************************************************
      * Function: allDirs
-     * Return: all directories (read local if needed)
+     * Return: all directories
      *****************************************************************************/
-    QList<QString> allDirs();
+    QList<QString> allDirs() const;
 
     /******************************************************************************
-     * Function: allDirs
-     * Return: all directories (read local if needed)
+     * Function: allTags
+     * Return: all tags managed by IntelliNote
      *****************************************************************************/
-    QStringList allTags();
+    QStringList allTags() const;
 
     /******************************************************************************
      * Function: notesOfDir
      * Return: get all notes of a dir
      *****************************************************************************/
-    QList<Note> notesOfDir(const QString &dir);
+    QList<Note> notesOfDir(const QString &dir) const;
 
     /******************************************************************************
      * Function: notesOfTag
      * Return: get all notes with such tag
      *****************************************************************************/
-    QList<Note> notesOfTag(const QString &tag);
+    QList<Note> notesOfTag(const QString &tag) const;
 
    signals:
 
    private:
-    bool hasCached;
-
-    QList<Note> cachedNotes;
+    QList<Note> notes;
     QHash<QString, QList<Note> > dirToNotes;
     QHash<QString, QList<Note> > tagToNotes;
 
     QString notesDirectory;
 };
-
-#endif  // NOTEMANAGER_H
