@@ -25,6 +25,11 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets WebChannel WebEngineWidgets
 
 set(TS_FILES IntelliNote_zh_CN.ts)
 
+set(MYLIBS
+    Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::WebEngineWidgets
+    Qt${QT_VERSION_MAJOR}::WebChannel Qt${QT_VERSION_MAJOR}::Network
+    qmarkdowntextedit)
+
 qt_add_resources(QRC_FILES "res.qrc")
 source_group("Resource Files" FILES "res.qrc")
 
@@ -45,8 +50,7 @@ set(PROJECT_SOURCES
     TransSession.cpp
     MDViewer.h
     MDViewer.cpp
-#    NoteTreeModel.h
-#    NoteTreeModel.cpp
+    # NoteTreeModel.h NoteTreeModel.cpp
     Dialogs/PromptGenerateDialog.h
     Dialogs/PromptGenerateDialog.cpp
     Dialogs/PromptGenerateDialog.ui
@@ -58,26 +62,19 @@ if(BUILD_TEST)
 
   qt_add_executable(TEST_GPTSession MANUAL_FINALIZATION GPTSession.cpp
                     test/GPTSessiontest.cpp)
-  target_link_libraries(
-    TEST_GPTSession
-    PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
-            Qt${QT_VERSION_MAJOR}::WebEngineWidgets
-            Qt${QT_VERSION_MAJOR}::WebChannel
-            Qt${QT_VERSION_MAJOR}::Network
-            qmarkdowntextedit)
+  target_link_libraries(TEST_GPTSession PRIVATE ${MYLIBS})
 
   qt_add_executable(TEST_TransSession MANUAL_FINALIZATION TransSession.cpp
-          test/TransSessiontest.cpp)
-  target_link_libraries(
-          TEST_TransSession
-          PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
-          Qt${QT_VERSION_MAJOR}::WebEngineWidgets
-          Qt${QT_VERSION_MAJOR}::WebChannel
-          Qt${QT_VERSION_MAJOR}::Network
-          qmarkdowntextedit)
+                    test/TransSessiontest.cpp)
+  target_link_libraries(TEST_TransSession PRIVATE ${MYLIBS})
+
+  qt_add_executable(TEST_NoteManager MANUAL_FINALIZATION Note.cpp
+                    NoteManager.cpp test/NoteManagertest.cpp)
+  target_link_libraries(TEST_NoteManager PRIVATE ${MYLIBS})
 
   add_test(NAME GPTSession_Test COMMAND $<TARGET_FILE:TEST_GPTSession>)
   add_test(NAME TransSession_Test COMMAND $<TARGET_FILE:TEST_TransSession>)
+  add_test(NAME NoteManager_Test COMMAND $<TARGET_FILE:TEST_NoteManager>)
 endif()
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

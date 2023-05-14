@@ -15,18 +15,40 @@ struct Note {
         InnerNote
     };
 
+    friend QDataStream& operator<<(QDataStream& output, const Note& note)
+    {
+        output << note.name;
+        output << note.dir;
+        output << note.path;
+        output << (note.type == ExternalNote ? 'E' : 'I');
+        return output;
+    }
+
+    friend QDataStream& operator>>(QDataStream& input, Note& note)
+    {
+        input >> note.name;
+        input >> note.dir;
+        input >> note.path;
+        QChar type_identity;
+        input >> type_identity;
+        if (type_identity == 'E')
+            note.type = ExternalNote;
+        else
+            note.type = InnerNote;
+        return input;
+    }
+
    public:
     Note();
 
     // one note has only one directory as its parent
     QString dir;
 
-    QString path;
-
     QString name;
 
-    // one note can have multiple tags
-    QStringList tags;
+    QString path;
+
+    NoteType type;
 };
 
 #endif  // NOTE_H

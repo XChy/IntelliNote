@@ -46,10 +46,10 @@ class NoteManager : public QObject
      * Function: importNote
      * Return:
      * 0 : succeed
-     * 1 : note has exist
+     * 1 : note has existed
      * 2 : other exceptions
      *****************************************************************************/
-    int importNote(const Note &note, const QString &note_content);
+    int importNote(const Note &note, const QString &external_note_path);
 
     /******************************************************************************
      * Function: removeNote
@@ -59,6 +59,23 @@ class NoteManager : public QObject
      * 2 : other exceptions
      *****************************************************************************/
     int removeNote(const Note &note);
+
+    /******************************************************************************
+     * Function: removeDir
+     * Return:
+     * 0 : succeed
+     * 1 : no such dir
+     * 2 : other exceptions
+     *****************************************************************************/
+    int removeDir(const QString &dir);
+
+    /******************************************************************************
+     * Function: renameNote
+     * Return:
+     * 0 : succeed
+     * 1 : fail
+     *****************************************************************************/
+    int renameNote(const Note &note, QString new_name);
 
     /******************************************************************************
      * Function: readNote
@@ -76,8 +93,23 @@ class NoteManager : public QObject
      * 0 : succeed
      * 1 : failure
      *****************************************************************************/
-    int saveNote(const Note &oldNote, const Note &newNote,
-                 const QString &newContent);
+    int saveNote(const Note &note, const QString &newContent);
+
+    /******************************************************************************
+     * Function: readTags
+     * Return:
+     * 0 : succeed
+     * 1 : fail
+     *****************************************************************************/
+    int readTags();
+
+    /******************************************************************************
+     * Function: saveTags
+     * Return:
+     * 0 : succeed
+     * 1 : fail
+     *****************************************************************************/
+    int saveTags();
 
     /******************************************************************************
      * Function: getNotes
@@ -120,4 +152,4 @@ class NoteManager : public QObject
     QString notesDirectory;
 };
 
-#endif  //
+#endif
