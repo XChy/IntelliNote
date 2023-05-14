@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QStringList>
+#include <QDebug>
 
 struct Note {
    public:
@@ -27,6 +28,7 @@ struct Note {
     friend QDataStream& operator>>(QDataStream& input, Note& note)
     {
         input >> note.name;
+        qDebug() << "name" << note.name;
         input >> note.dir;
         input >> note.path;
         QChar type_identity;

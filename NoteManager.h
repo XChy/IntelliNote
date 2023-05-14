@@ -33,6 +33,16 @@ class NoteManager : public QObject
     int readAll();
 
     /******************************************************************************
+     * Function: createDir
+     * Return:
+     * 0 : succeed
+     * 1 : note has exist
+     * 2 : other exceptions
+     *****************************************************************************/
+
+    int createDir(const QString &dir);
+
+    /******************************************************************************
      * Function: createNote
      * Return:
      * 0 : succeed
@@ -112,6 +122,14 @@ class NoteManager : public QObject
     int saveTags();
 
     /******************************************************************************
+     * Function: tagNote
+     * Return:
+     * 0 : succeed
+     * 1 : fail
+     *****************************************************************************/
+    int tagNote(const Note &note, const QString &tag);
+
+    /******************************************************************************
      * Function: getNotes
      * Return: if not cached, read from local files
      * Error:
@@ -141,6 +159,8 @@ class NoteManager : public QObject
      * Return: get all notes with such tag
      *****************************************************************************/
     QList<Note> notesOfTag(const QString &tag) const;
+
+    QString pathForInternal(const Note &note) const;
 
    signals:
 

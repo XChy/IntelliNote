@@ -19,15 +19,22 @@ int NoteManager::readAll()
     if (!dir.exists()) {
         dir.mkdir(notesDirectory);
         dir.mkdir("Notes");
+        QFile tags_file(notesDirectory + "/tags");
+        if (!tags_file.open(QFile::NewOnly)) {
+            qDebug() << tags_file.errorString();
+            return 1;
+        }
     }
 
     // TODO: read note
     QDir notes_dir(notesDirectory + "/Notes");
-    for (auto dir_name : notes_dir.entryList(QDir::Dirs)) {
+    for (auto dir_name :
+         notes_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
         QDir subdir(notes_dir.path() + "/" + dir_name);
         dirToNotes[dir_name] = QList<Note>();
 
-        for (auto note_name : subdir.entryList(QDir::Files)) {
+        for (auto note_name :
+             subdir.entryList(QDir::Files | QDir::NoDotAndDotDot)) {
             Note note;
             note.name = note_name;
             note.path = subdir.absolutePath() + "/" + note_name;
@@ -39,7 +46,18 @@ int NoteManager::readAll()
         }
     }
 
-    readTags();
+    return readTags();
+}
+
+int NoteManager::createDir(const QString &dir_name)
+{
+    if (dirToNotes.contains(dir_name)) return 1;
+
+    QDir dir(notesDirectory + "/Notes/" + dir_name);
+    if (!dir.mkpath(dir.absolutePath())) return 2;
+
+    dirToNotes[dir_name] = QList<Note>();
+
     return 0;
 }
 
@@ -52,14 +70,13 @@ int NoteManager::createNote(const Note &note)
         }
     }
 
-    QString note_path =
-        QString("%1/%2/%3").arg(notesDirectory, note.dir, note.name);
     dirToNotes[note.dir].append(note);
     notes.append(note);
 
     // create file for note
-    QFile note_file(note_path);
-    if (!note_file.open(QFile::ReadWrite)) {
+    QFile note_file(note.path);
+    if (!note_file.open(QFile::NewOnly)) {
+        qDebug() << note_file.errorString();
         return 2;
     }
     note_file.close();
@@ -185,6 +202,21 @@ int NoteManager::saveTags()
     return 0;
 }
 
+int NoteManager::tagNote(const Note &note, const QString &tag)
+{
+    if (!tagToNotes.contains(tag)) tagToNotes[tag] = QList<Note>();
+
+    for (auto compared_note : tagToNotes[tag]) {
+        if (note.name == compared_note.name && note.dir == compared_note.dir) {
+            return 1;
+        }
+    }
+
+    tagToNotes[tag].append(note);
+    saveTags();
+    return 0;
+}
+
 QList<Note> NoteManager::allNotes() const { return notes; }
 
 QList<QString> NoteManager::allDirs() const { return dirToNotes.keys(); }
@@ -199,4 +231,9 @@ QList<Note> NoteManager::notesOfDir(const QString &dir) const
 QList<Note> NoteManager::notesOfTag(const QString &tag) const
 {
     return tagToNotes[tag];
+}
+
+QString NoteManager::pathForInternal(const Note &note) const
+{
+    return QString("%1/Notes/%2/%3").arg(notesDirectory, note.dir, note.name);
 }
