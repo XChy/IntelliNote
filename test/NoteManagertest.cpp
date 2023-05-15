@@ -1,3 +1,4 @@
+#include <qhash.h>
 #include <QApplication>
 #include <QStandardPaths>
 #include <QDebug>
@@ -14,15 +15,6 @@ int main(int argc, char* argv[])
     manager->readAll();
 
     auto notesDirectory = manager->getNotesDirectory();
-    QFile file(notesDirectory + "/tags");
-    if (!file.open(QFile::ReadOnly)) return 1;
-    QDataStream stream(&file);
-    while (!stream.atEnd()) {
-        QString s;
-        stream >> s;
-        qDebug() << s;
-    }
-    file.close();
 
     // check readAll
     for (auto note : manager->allNotes()) {

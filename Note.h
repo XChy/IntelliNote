@@ -1,6 +1,7 @@
 #ifndef NOTE_H
 #define NOTE_H
 
+#include <qglobal.h>
 #include <QString>
 #include <QStringList>
 #include <QDebug>
@@ -21,17 +22,16 @@ struct Note {
         output << note.name;
         output << note.dir;
         output << note.path;
-        output << (note.type == ExternalNote ? 'E' : 'I');
+        output << qint8(note.type == ExternalNote ? 'E' : 'I');
         return output;
     }
 
     friend QDataStream& operator>>(QDataStream& input, Note& note)
     {
         input >> note.name;
-        qDebug() << "name" << note.name;
         input >> note.dir;
         input >> note.path;
-        QChar type_identity;
+        qint8 type_identity;
         input >> type_identity;
         if (type_identity == 'E')
             note.type = ExternalNote;

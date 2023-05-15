@@ -16,7 +16,7 @@ int NoteManager::readAll()
 {
     QDir dir(notesDirectory);
 
-    if (!dir.exists()) {
+    if (!dir.exists() || !QFile::exists(notesDirectory + "/tags")) {
         dir.mkdir(notesDirectory);
         dir.mkdir("Notes");
         QFile tags_file(notesDirectory + "/tags");
