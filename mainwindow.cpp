@@ -5,18 +5,21 @@
 #include <qplaintextedit.h>
 #include <qpoint.h>
 #include <qtextbrowser.h>
-#include <qtextdocument.h>
+#include <QStandardPaths>
 #include <QStandardItemModel>
 #include <qmarkdowntextedit/markdownhighlighter.h>
 #include <qtreeview.h>
 #include "./ui_mainwindow.h"
 #include "Dialogs/PromptGenerateDialog.h"
 #include "GPTSession.h"
+#include "NoteManager.h"
+#include "NoteTreeModel.h"
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),
       ui(new Ui::MainWindow),
-      generateDialog(new PromptGenerateDialog(this))
+      generateDialog(new PromptGenerateDialog(this)),
+      noteManager(new NoteManager(parent))
 {
     ui->setupUi(this);
     ui->splitter->setStretchFactor(0, 1);
@@ -59,9 +62,13 @@ MainWindow::MainWindow(QWidget* parent)
             });
 
     // Note Manager
-    auto model = new QStandardItemModel;
-    model->appendRow(new QStandardItem("asd"));
-    model->item(0)->setChild(0, 0, new QStandardItem("asd"));
+    noteManager->setNotesDirectory(
+        QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) +
+        "/IntelliNote");
+    noteManager->readAll();
+
+    auto model = new NoteTreeModel;
+    model->setNoteManager(noteManager);
 
     ui->noteManager->setModel(model);
     ui->noteManager->setEditTriggers(QTreeView::NoEditTriggers);

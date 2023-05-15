@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "Dialogs/PromptGenerateDialog.h"
+#include "NoteManager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -25,5 +26,6 @@ class MainWindow : public QMainWindow
     Ui::MainWindow *ui;
 
     PromptGenerateDialog *generateDialog;
+    NoteManager *noteManager;
 };
 #endif  // MAINWINDOW_H

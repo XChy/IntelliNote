@@ -1,12 +1,33 @@
 #ifndef NOTETREEMODEL_H
 #define NOTETREEMODEL_H
 
+#include <qabstractitemmodel.h>
 #include <QAbstractItemModel>
 #include "NoteManager.h"
 
 class NoteTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
+    enum ItemType {
+        Root,
+        NoteBooks,
+        NoteBook,
+        NoteFromNoteBook,
+        NoteFromTag,
+        Tags,
+        Tag
+    };
+
+    class NoteItem
+    {
+       public:
+        NoteItem() {}
+
+        ItemType type;
+        QString name;
+        int row;
+        NoteItem *parent;
+    };
 
    public:
     explicit NoteTreeModel(QObject *parent = nullptr);
@@ -25,6 +46,8 @@ class NoteTreeModel : public QAbstractItemModel
 
     QVariant data(const QModelIndex &index,
                   int role = Qt::DisplayRole) const override;
+
+    NoteItem *itemFrom(const QModelIndex &index);
 
     void setNoteManager(NoteManager *noteManager);
     NoteManager *getNoteManager() const;
