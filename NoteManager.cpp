@@ -1,6 +1,7 @@
 #include "NoteManager.h"
 #include <qdir.h>
 #include <qlist.h>
+#include <qtmetamacros.h>
 #include "Note.h"
 
 NoteManager::NoteManager(QObject *parent) : QObject{parent} {}
@@ -46,7 +47,10 @@ int NoteManager::readAll()
         }
     }
 
-    return readTags();
+    if (readTags() == 1) return 1;
+
+    emit noteChanged();
+    return 0;
 }
 
 int NoteManager::createDir(const QString &dir_name)
@@ -58,6 +62,7 @@ int NoteManager::createDir(const QString &dir_name)
 
     dirToNotes[dir_name] = QList<Note>();
 
+    emit noteChanged();
     return 0;
 }
 
@@ -81,6 +86,7 @@ int NoteManager::createNote(const Note &note)
     }
     note_file.close();
 
+    emit noteChanged();
     return 0;
 }
 
@@ -102,6 +108,7 @@ int NoteManager::importNote(const Note &note, const QString &external_note_path)
 
     if (!QFile::copy(external_note_path, note_path)) return 2;
 
+    emit noteChanged();
     return 0;
 }
 
@@ -143,6 +150,7 @@ int NoteManager::removeNote(const Note &note)
     }
     saveTags();
 
+    emit noteChanged();
     return 0;
 }
 
@@ -158,6 +166,7 @@ int NoteManager::removeDir(const QString &dir)
 
     QDir(notesDirectory + "/" + dir).removeRecursively();
 
+    emit noteChanged();
     return 0;
 }
 

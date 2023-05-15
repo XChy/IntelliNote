@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <qabstractitemmodel.h>
+#include <qstandarditemmodel.h>
 #include <QMainWindow>
 #include "Dialogs/PromptGenerateDialog.h"
 #include "NoteManager.h"
@@ -21,11 +23,14 @@ class MainWindow : public QMainWindow
 
     void onGenerateContent();
     void onGenerateLatex();
+    void setupModel();
 
    private:
     Ui::MainWindow *ui;
 
     PromptGenerateDialog *generateDialog;
     NoteManager *noteManager;
+
+    QStandardItemModel *model;
 };
 #endif  // MAINWINDOW_H

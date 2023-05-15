@@ -1,9 +1,12 @@
 #include "mainwindow.h"
+#include <qabstractitemmodel.h>
 #include <qaction.h>
 #include <qmenu.h>
 #include <qnamespace.h>
 #include <qplaintextedit.h>
 #include <qpoint.h>
+#include <qstandarditemmodel.h>
+#include <qstringliteral.h>
 #include <qtextbrowser.h>
 #include <QStandardPaths>
 #include <QStandardItemModel>
@@ -13,7 +16,6 @@
 #include "Dialogs/PromptGenerateDialog.h"
 #include "GPTSession.h"
 #include "NoteManager.h"
-#include "NoteTreeModel.h"
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),
@@ -67,12 +69,13 @@ MainWindow::MainWindow(QWidget* parent)
         "/IntelliNote");
     noteManager->readAll();
 
-    auto model = new NoteTreeModel;
-    model->setNoteManager(noteManager);
+    model = new QStandardItemModel(this);
+    setupModel();
 
     ui->noteManager->setModel(model);
     ui->noteManager->setEditTriggers(QTreeView::NoEditTriggers);
     ui->noteManager->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui->noteManager->header()->setVisible(false);
 
     // sync the preview page with the editor
     connect(ui->textEdit, &QPlainTextEdit::textChanged,
@@ -91,10 +94,6 @@ void MainWindow::onGenerateContent()
 void MainWindow::onGenerateLatex()
 {
     generateDialog->clear();
-    // generateDialog->setPromptPattern(tr(
-    //"请根据我的下列要求给出对应的纯latex格式的数学式子:%1,"
-    //"你的回答中请不要附加其他内容，直接把公式告诉我就好，也不需要有对于公式"
-    //"的阐释"));
     generateDialog->setPromptPattern(
         tr("Please generate pure latex code surrounded with $ without "
            "explanation as described "
@@ -102,6 +101,29 @@ void MainWindow::onGenerateLatex()
     if (generateDialog->exec() == QDialog::Accepted) {
         ui->textEdit->insertPlainText(generateDialog->getResult());
     }
+}
+
+void MainWindow::setupModel()
+{
+    model->clear();
+    QStandardItem* notebooks = new QStandardItem(tr("NoteBooks"));
+    for (QString notebook : noteManager->allDirs()) {
+        QStandardItem* notebook_item = new QStandardItem(notebook);
+        for (Note note : noteManager->notesOfDir(notebook))
+            notebook_item->appendRow(new QStandardItem(note.name));
+        notebooks->appendRow(notebook_item);
+    }
+
+    QStandardItem* tags = new QStandardItem(tr("Tags"));
+    for (QString tag : noteManager->allTags()) {
+        QStandardItem* notebook_item = new QStandardItem(tag);
+        for (Note note : noteManager->notesOfTag(tag))
+            notebook_item->appendRow(new QStandardItem(note.name));
+        notebooks->appendRow(notebook_item);
+    }
+
+    model->appendRow(notebooks);
+    model->appendRow(tags);
 }
 
 MainWindow::~MainWindow() { delete ui; }

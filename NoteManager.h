@@ -163,6 +163,7 @@ class NoteManager : public QObject
     QString pathForInternal(const Note &note) const;
 
    signals:
+    void noteChanged();
 
    private:
     QList<Note> notes;

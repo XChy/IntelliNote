@@ -50,8 +50,6 @@ set(PROJECT_SOURCES
     TransSession.cpp
     MDViewer.h
     MDViewer.cpp
-    NoteTreeModel.h
-    NoteTreeModel.cpp
     Dialogs/PromptGenerateDialog.h
     Dialogs/PromptGenerateDialog.cpp
     Dialogs/PromptGenerateDialog.ui
