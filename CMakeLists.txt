@@ -53,6 +53,10 @@ set(PROJECT_SOURCES
     Dialogs/PromptGenerateDialog.h
     Dialogs/PromptGenerateDialog.cpp
     Dialogs/PromptGenerateDialog.ui
+    Dialogs/NewNoteDialog.h
+    Dialogs/NewNoteDialog.cpp
+    Dialogs/NewNoteDialog.ui
+    Dialogs/ImportNoteDialog.h Dialogs/ImportNoteDialog.cpp Dialogs/ImportNoteDialog.ui
     ${QRC_FILES}
     ${TS_FILES})
 

@@ -5,6 +5,8 @@
 #include <qstandarditemmodel.h>
 #include <QMainWindow>
 #include "Dialogs/PromptGenerateDialog.h"
+#include "Dialogs/NewNoteDialog.h"
+#include "Dialogs/ImportNoteDialog.h"
 #include "NoteManager.h"
 
 QT_BEGIN_NAMESPACE
@@ -23,13 +25,20 @@ class MainWindow : public QMainWindow
 
     void onGenerateContent();
     void onGenerateLatex();
+
+    void onNewNote();
+    void onImportNote();
+
     void setupModel();
 
    private:
     Ui::MainWindow *ui;
 
-    PromptGenerateDialog *generateDialog;
     NoteManager *noteManager;
+
+    PromptGenerateDialog *generateDialog;
+    NewNoteDialog *newNoteDialog;
+    ImportNoteDialog *importNoteDialog;
 
     QStandardItemModel *model;
 };

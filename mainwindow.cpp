@@ -1,16 +1,18 @@
 #include "mainwindow.h"
 #include <qabstractitemmodel.h>
 #include <qaction.h>
-#include <qmenu.h>
-#include <qnamespace.h>
-#include <qplaintextedit.h>
+#include <QScrollBar>
+#include <QMessageBox>
+#include <qlist.h>
 #include <qpoint.h>
+#include <qscrollbar.h>
 #include <qstandarditemmodel.h>
 #include <qstringliteral.h>
 #include <qtextbrowser.h>
 #include <QStandardPaths>
 #include <QStandardItemModel>
 #include <qmarkdowntextedit/markdownhighlighter.h>
+#include <qtextedit.h>
 #include <qtreeview.h>
 #include "./ui_mainwindow.h"
 #include "Dialogs/PromptGenerateDialog.h"
@@ -20,8 +22,10 @@
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),
       ui(new Ui::MainWindow),
+      noteManager(new NoteManager(parent)),
       generateDialog(new PromptGenerateDialog(this)),
-      noteManager(new NoteManager(parent))
+      newNoteDialog(new NewNoteDialog(this, noteManager)),
+      importNoteDialog(new ImportNoteDialog(this, noteManager))
 {
     ui->setupUi(this);
     ui->splitter->setStretchFactor(0, 1);
@@ -32,6 +36,7 @@ MainWindow::MainWindow(QWidget* parent)
     auto doc = ui->textEdit->document();
     auto* highlighter = new MarkdownHighlighter(doc);
 
+    // context menu for editor
     ui->textEdit->setContextMenuPolicy(Qt::CustomContextMenu);
     QMenu* contextMenu = new QMenu(ui->textEdit);
 
@@ -63,23 +68,44 @@ MainWindow::MainWindow(QWidget* parent)
                 contextMenu->exec(ui->textEdit->mapToGlobal(pos));
             });
 
+    // topbox
+    connect(ui->actionNewNote, &QAction::triggered, this,
+            &MainWindow::onNewNote);
+    connect(ui->actionImportNote, &QAction::triggered, this,
+            &MainWindow::onImportNote);
+
     // Note Manager
     noteManager->setNotesDirectory(
         QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) +
         "/IntelliNote");
-    noteManager->readAll();
 
     model = new QStandardItemModel(this);
-    setupModel();
+
+    connect(noteManager, &NoteManager::noteChanged, this,
+            &MainWindow::setupModel);
+    noteManager->readAll();
 
     ui->noteManager->setModel(model);
     ui->noteManager->setEditTriggers(QTreeView::NoEditTriggers);
     ui->noteManager->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->noteManager->header()->setVisible(false);
 
+    connect(noteManager, &NoteManager::noteChanged, this,
+            &MainWindow::setupModel);
+
     // sync the preview page with the editor
     connect(ui->textEdit, &QPlainTextEdit::textChanged,
             [=]() { ui->viewer->setText(ui->textEdit->toPlainText()); });
+    connect(
+        ui->textEdit->verticalScrollBar(), &QScrollBar::valueChanged,
+        [this](int value) {
+            qDebug() << value;
+            ui->viewer->page()->runJavaScript(
+                QStringLiteral(
+                    "window.scrollTo(0 ,document.body.clientHeight * %1)")
+                    .arg(double(value) /
+                         double(ui->textEdit->verticalScrollBar()->maximum())));
+        });
 }
 
 void MainWindow::onGenerateContent()
@@ -101,6 +127,51 @@ void MainWindow::onGenerateLatex()
     if (generateDialog->exec() == QDialog::Accepted) {
         ui->textEdit->insertPlainText(generateDialog->getResult());
     }
+}
+
+void MainWindow::onNewNote()
+{
+    if (newNoteDialog->exec() == QDialog::Accepted) {
+        Note note = newNoteDialog->getNote();
+        int err = noteManager->createNote(note);
+
+        if (err == 1) {
+            QMessageBox::critical(NULL, tr("Cannot create new note"),
+                                  tr("There is an note with the same name"));
+        } else if (err == 2) {
+            QMessageBox::critical(NULL, tr("Cannot create new note"),
+                                  tr("Some errors occurs in the filesystem"));
+        } else {
+            QMessageBox::information(NULL, tr("Succeed creating new note"),
+                                     tr("Succeed creating new note"));
+        }
+    }
+}
+
+void MainWindow::onImportNote()
+{
+    if (importNoteDialog->exec() == QDialog::Accepted) {
+        QStringList paths = importNoteDialog->getPaths();
+        QList<Note> notes = importNoteDialog->getNotes();
+        for (int i = 0; i < notes.size(); ++i) {
+            int err = noteManager->importNote(notes[i], paths[i]);
+
+            // TODO: error handling
+            if (err == 1) {
+                QMessageBox::critical(
+                    NULL, tr("Cannot import note"),
+                    tr("There is an note with the same name"));
+            } else if (err == 2) {
+                QMessageBox::critical(
+                    NULL, tr("Cannot import note"),
+                    tr("Some errors occurs in the filesystem"));
+            }
+        }
+    }
+    QDialog Dialogs;
+    Note note;
+    QString note_path;
+    noteManager->importNote(note, note_path);
 }
 
 void MainWindow::setupModel()
