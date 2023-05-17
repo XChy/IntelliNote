@@ -99,14 +99,15 @@ int NoteManager::importNote(const Note &note, const QString &external_note_path)
         }
     }
 
-    QString note_path =
-        QString("%1/%2/%3").arg(notesDirectory, note.dir, note.name);
-    dirToNotes[note.dir].append(note);
-    notes.append(note);
-
     // import file for note
 
-    if (!QFile::copy(external_note_path, note_path)) return 2;
+    qDebug() << external_note_path;
+    qDebug() << note.path;
+
+    if (!QFile::copy(external_note_path, note.path)) return 2;
+
+    dirToNotes[note.dir].append(note);
+    notes.append(note);
 
     emit noteChanged();
     return 0;

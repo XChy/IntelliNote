@@ -159,19 +159,15 @@ void MainWindow::onImportNote()
             // TODO: error handling
             if (err == 1) {
                 QMessageBox::critical(
-                    NULL, tr("Cannot import note"),
+                    NULL, tr("Cannot import note:%1").arg(paths[i]),
                     tr("There is an note with the same name"));
             } else if (err == 2) {
                 QMessageBox::critical(
-                    NULL, tr("Cannot import note"),
+                    NULL, tr("Cannot import note:%1").arg(paths[i]),
                     tr("Some errors occurs in the filesystem"));
             }
         }
     }
-    QDialog Dialogs;
-    Note note;
-    QString note_path;
-    noteManager->importNote(note, note_path);
 }
 
 void MainWindow::setupModel()
