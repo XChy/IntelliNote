@@ -11,6 +11,7 @@
 #include <qtextbrowser.h>
 #include <QStandardPaths>
 #include <QStandardItemModel>
+#include <ios>
 #include <qmarkdowntextedit/markdownhighlighter.h>
 #include <qtextedit.h>
 #include <qtreeview.h>
@@ -25,7 +26,10 @@ MainWindow::MainWindow(QWidget* parent)
       noteManager(new NoteManager(parent)),
       generateDialog(new PromptGenerateDialog(this)),
       newNoteDialog(new NewNoteDialog(this, noteManager)),
-      importNoteDialog(new ImportNoteDialog(this, noteManager))
+      importNoteDialog(new ImportNoteDialog(this, noteManager)),
+      model(new QStandardItemModel(this)),
+      notebooks_item(new QStandardItem(tr("NoteBooks"))),
+      tags_item(new QStandardItem(tr("Tags")))
 {
     ui->setupUi(this);
     ui->splitter->setStretchFactor(0, 1);
@@ -71,6 +75,12 @@ MainWindow::MainWindow(QWidget* parent)
     // topbox
     connect(ui->actionNewNote, &QAction::triggered, this,
             &MainWindow::onNewNote);
+    connect(ui->actionSaveNote, &QAction::triggered, [this]() {
+        if (!currentNote.name.isEmpty()) {
+            noteManager->saveNote(currentNote, ui->textEdit->toPlainText());
+        }
+    });
+
     connect(ui->actionImportNote, &QAction::triggered, this,
             &MainWindow::onImportNote);
 
@@ -78,8 +88,6 @@ MainWindow::MainWindow(QWidget* parent)
     noteManager->setNotesDirectory(
         QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) +
         "/IntelliNote");
-
-    model = new QStandardItemModel(this);
 
     connect(noteManager, &NoteManager::noteChanged, this,
             &MainWindow::setupModel);
@@ -93,13 +101,16 @@ MainWindow::MainWindow(QWidget* parent)
     connect(noteManager, &NoteManager::noteChanged, this,
             &MainWindow::setupModel);
 
+    // Model
+    connect(ui->noteManager, &QTreeView::doubleClicked, this,
+            &MainWindow::onOpen);
+
     // sync the preview page with the editor
     connect(ui->textEdit, &QPlainTextEdit::textChanged,
             [=]() { ui->viewer->setText(ui->textEdit->toPlainText()); });
     connect(
         ui->textEdit->verticalScrollBar(), &QScrollBar::valueChanged,
         [this](int value) {
-            qDebug() << value;
             ui->viewer->page()->runJavaScript(
                 QStringLiteral(
                     "window.scrollTo(0 ,document.body.clientHeight * %1)")
@@ -170,27 +181,56 @@ void MainWindow::onImportNote()
     }
 }
 
+void MainWindow::onOpen(const QModelIndex& index)
+{
+    auto item = model->itemFromIndex(index);
+    if (item->parent() && item->parent()->parent()) {
+        if (item->parent()->parent() == notebooks_item) {
+            Note note;
+            note.dir = item->parent()->text();
+            note.name = item->text();
+            note.path = noteManager->pathForInternal(note);
+            switchNote(note);
+        } else if (item->parent()->parent() == tags_item) {
+            QString tag = item->parent()->text();
+            auto notes = noteManager->notesOfTag(tag);
+            for (auto note : notes) {
+                if (note.name == item->text()) {
+                    switchNote(note);
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void MainWindow::switchNote(const Note& note)
+{
+    currentNote = note;
+    // TODO: check if modified
+    ui->textEdit->setPlainText(noteManager->readNote(note));
+}
+
 void MainWindow::setupModel()
 {
     model->clear();
-    QStandardItem* notebooks = new QStandardItem(tr("NoteBooks"));
+
     for (QString notebook : noteManager->allDirs()) {
         QStandardItem* notebook_item = new QStandardItem(notebook);
         for (Note note : noteManager->notesOfDir(notebook))
             notebook_item->appendRow(new QStandardItem(note.name));
-        notebooks->appendRow(notebook_item);
+        notebooks_item->appendRow(notebook_item);
     }
 
-    QStandardItem* tags = new QStandardItem(tr("Tags"));
     for (QString tag : noteManager->allTags()) {
         QStandardItem* notebook_item = new QStandardItem(tag);
         for (Note note : noteManager->notesOfTag(tag))
             notebook_item->appendRow(new QStandardItem(note.name));
-        notebooks->appendRow(notebook_item);
+        tags_item->appendRow(notebook_item);
     }
 
-    model->appendRow(notebooks);
-    model->appendRow(tags);
+    model->appendRow(notebooks_item);
+    model->appendRow(tags_item);
 }
 
 MainWindow::~MainWindow() { delete ui; }

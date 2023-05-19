@@ -7,6 +7,7 @@
 #include "Dialogs/PromptGenerateDialog.h"
 #include "Dialogs/NewNoteDialog.h"
 #include "Dialogs/ImportNoteDialog.h"
+#include "Note.h"
 #include "NoteManager.h"
 
 QT_BEGIN_NAMESPACE
@@ -29,6 +30,10 @@ class MainWindow : public QMainWindow
     void onNewNote();
     void onImportNote();
 
+    void onOpen(const QModelIndex &index);
+
+    void switchNote(const Note &note);
+
     void setupModel();
 
    private:
@@ -41,5 +46,10 @@ class MainWindow : public QMainWindow
     ImportNoteDialog *importNoteDialog;
 
     QStandardItemModel *model;
+
+    QStandardItem *notebooks_item;
+    QStandardItem *tags_item;
+
+    Note currentNote;
 };
 #endif  // MAINWINDOW_H
