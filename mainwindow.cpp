@@ -4,6 +4,7 @@
 #include <QScrollBar>
 #include <QMessageBox>
 #include <qlist.h>
+#include <qmessagebox.h>
 #include <qpoint.h>
 #include <qscrollbar.h>
 #include <qstandarditemmodel.h>
@@ -33,8 +34,7 @@ MainWindow::MainWindow(QWidget* parent)
 {
     ui->setupUi(this);
     ui->splitter->setStretchFactor(0, 1);
-    ui->splitter->setStretchFactor(1, 2);
-    ui->splitter->setStretchFactor(2, 4);
+    ui->splitter->setStretchFactor(1, 3);
 
     // highlight the markdown editor
     auto doc = ui->textEdit->document();
@@ -67,9 +67,17 @@ MainWindow::MainWindow(QWidget* parent)
     contextMenu->addActions({copy_action, paste_action, cut_action,
                              generate_content_action, generate_latex_action});
 
+    // textEdit
     connect(ui->textEdit, &QPlainTextEdit::customContextMenuRequested,
             [contextMenu, this](QPoint pos) {
                 contextMenu->exec(ui->textEdit->mapToGlobal(pos));
+            });
+    connect(ui->textEdit, &QPlainTextEdit::modificationChanged,
+            [this](bool isModified) {
+                if (isModified)
+                    ui->nameLabel->setText(currentNote.name + " *");
+                else
+                    ui->nameLabel->setText(currentNote.name);
             });
 
     // topbox
@@ -78,6 +86,7 @@ MainWindow::MainWindow(QWidget* parent)
     connect(ui->actionSaveNote, &QAction::triggered, [this]() {
         if (!currentNote.name.isEmpty()) {
             noteManager->saveNote(currentNote, ui->textEdit->toPlainText());
+            ui->textEdit->setPlainText(ui->textEdit->toPlainText());
         }
     });
 
@@ -206,9 +215,20 @@ void MainWindow::onOpen(const QModelIndex& index)
 
 void MainWindow::switchNote(const Note& note)
 {
+    if (ui->textEdit->document()->isModified()) {
+        if (QMessageBox::question(
+                NULL, tr("One note remains unsaved"),
+                tr("Do you want to save the note %1").arg(currentNote.name),
+                QMessageBox::Save | QMessageBox::Discard) ==
+            QMessageBox::Save) {
+            noteManager->saveNote(currentNote, ui->textEdit->toPlainText());
+        }
+    }
+
     currentNote = note;
-    // TODO: check if modified
+
     ui->textEdit->setPlainText(noteManager->readNote(note));
+    ui->nameLabel->setText(note.name);
 }
 
 void MainWindow::setupModel()
