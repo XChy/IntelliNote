@@ -33,6 +33,16 @@ class NoteManager : public QObject
     int readAll();
 
     /******************************************************************************
+     * Function: createDir
+     * Return:
+     * 0 : succeed
+     * 1 : note has exist
+     * 2 : other exceptions
+     *****************************************************************************/
+
+    int createDir(const QString &dir);
+
+    /******************************************************************************
      * Function: createNote
      * Return:
      * 0 : succeed
@@ -46,10 +56,10 @@ class NoteManager : public QObject
      * Function: importNote
      * Return:
      * 0 : succeed
-     * 1 : note has exist
+     * 1 : note has existed
      * 2 : other exceptions
      *****************************************************************************/
-    int importNote(const Note &note, const QString &note_content);
+    int importNote(const Note &note, const QString &external_note_path);
 
     /******************************************************************************
      * Function: removeNote
@@ -59,6 +69,23 @@ class NoteManager : public QObject
      * 2 : other exceptions
      *****************************************************************************/
     int removeNote(const Note &note);
+
+    /******************************************************************************
+     * Function: removeDir
+     * Return:
+     * 0 : succeed
+     * 1 : no such dir
+     * 2 : other exceptions
+     *****************************************************************************/
+    int removeDir(const QString &dir);
+
+    /******************************************************************************
+     * Function: renameNote
+     * Return:
+     * 0 : succeed
+     * 1 : fail
+     *****************************************************************************/
+    int renameNote(const Note &note, QString new_name);
 
     /******************************************************************************
      * Function: readNote
@@ -76,50 +103,74 @@ class NoteManager : public QObject
      * 0 : succeed
      * 1 : failure
      *****************************************************************************/
-    int saveNote(const Note &oldNote, const Note &newNote,
-                 const QString &newContent);
+    int saveNote(const Note &note, const QString &newContent);
+
+    /******************************************************************************
+     * Function: readTags
+     * Return:
+     * 0 : succeed
+     * 1 : fail
+     *****************************************************************************/
+    int readTags();
+
+    /******************************************************************************
+     * Function: saveTags
+     * Return:
+     * 0 : succeed
+     * 1 : fail
+     *****************************************************************************/
+    int saveTags();
+
+    /******************************************************************************
+     * Function: tagNote
+     * Return:
+     * 0 : succeed
+     * 1 : fail
+     *****************************************************************************/
+    int tagNote(const Note &note, const QString &tag);
 
     /******************************************************************************
      * Function: getNotes
-     * Return: if not cached, read from local files, else return what you cache.
+     * Return: if not cached, read from local files
      * Error:
      *****************************************************************************/
-    QList<Note> allNotes();
+    QList<Note> allNotes() const;
 
     /******************************************************************************
      * Function: allDirs
-     * Return: all directories (read local if needed)
+     * Return: all directories
      *****************************************************************************/
-    QList<QString> allDirs();
+    QList<QString> allDirs() const;
 
     /******************************************************************************
-     * Function: allDirs
-     * Return: all directories (read local if needed)
+     * Function: allTags
+     * Return: all tags managed by IntelliNote
      *****************************************************************************/
-    QStringList allTags();
+    QStringList allTags() const;
 
     /******************************************************************************
      * Function: notesOfDir
      * Return: get all notes of a dir
      *****************************************************************************/
-    QList<Note> notesOfDir(const QString &dir);
+    QList<Note> notesOfDir(const QString &dir) const;
 
     /******************************************************************************
      * Function: notesOfTag
      * Return: get all notes with such tag
      *****************************************************************************/
-    QList<Note> notesOfTag(const QString &tag);
+    QList<Note> notesOfTag(const QString &tag) const;
+
+    QString pathForInternal(const Note &note) const;
 
    signals:
+    void noteChanged();
 
    private:
-    bool hasCached;
-
-    QList<Note> cachedNotes;
+    QList<Note> notes;
     QHash<QString, QList<Note> > dirToNotes;
     QHash<QString, QList<Note> > tagToNotes;
 
     QString notesDirectory;
 };
 
-#endif  // NOTEMANAGER_H
+#endif

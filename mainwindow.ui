@@ -21,24 +21,43 @@
        <enum>Qt::Horizontal</enum>
       </property>
       <widget class="QTreeView" name="noteManager"/>
-      <widget class="QPlainTextEdit" name="textEdit">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-      </widget>
-      <widget class="MDViewer" name="viewer">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="contextMenuPolicy">
-        <enum>Qt::CustomContextMenu</enum>
-       </property>
+      <widget class="QWidget" name="">
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QLabel" name="nameLabel">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1">
+          <item>
+           <widget class="QPlainTextEdit" name="textEdit">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="MDViewer" name="viewer">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="contextMenuPolicy">
+             <enum>Qt::CustomContextMenu</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -67,9 +86,11 @@
      <addaction name="actionPDF"/>
      <addaction name="actionHTML"/>
     </widget>
-    <addaction name="action_2"/>
-    <addaction name="action_3"/>
+    <addaction name="actionNewNote"/>
+    <addaction name="actionImportNote"/>
+    <addaction name="actionSaveNote"/>
     <addaction name="menu_3"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
@@ -87,12 +108,12 @@
     <string>关于IntelliNote</string>
    </property>
   </action>
-  <action name="action_2">
+  <action name="actionNewNote">
    <property name="text">
     <string>新建笔记</string>
    </property>
   </action>
-  <action name="action_3">
+  <action name="actionImportNote">
    <property name="text">
     <string>导入笔记</string>
    </property>
@@ -115,6 +136,11 @@
   <action name="actionHTML">
    <property name="text">
     <string>HTML</string>
+   </property>
+  </action>
+  <action name="actionSaveNote">
+   <property name="text">
+    <string>保存笔记</string>
    </property>
   </action>
  </widget>

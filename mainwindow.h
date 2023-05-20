@@ -1,8 +1,14 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <qabstractitemmodel.h>
+#include <qstandarditemmodel.h>
 #include <QMainWindow>
 #include "Dialogs/PromptGenerateDialog.h"
+#include "Dialogs/NewNoteDialog.h"
+#include "Dialogs/ImportNoteDialog.h"
+#include "Note.h"
+#include "NoteManager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -21,9 +27,29 @@ class MainWindow : public QMainWindow
     void onGenerateContent();
     void onGenerateLatex();
 
+    void onNewNote();
+    void onImportNote();
+
+    void onOpen(const QModelIndex &index);
+
+    void switchNote(const Note &note);
+
+    void setupModel();
+
    private:
     Ui::MainWindow *ui;
 
+    NoteManager *noteManager;
+
     PromptGenerateDialog *generateDialog;
+    NewNoteDialog *newNoteDialog;
+    ImportNoteDialog *importNoteDialog;
+
+    QStandardItemModel *model;
+
+    QStandardItem *notebooks_item;
+    QStandardItem *tags_item;
+
+    Note currentNote;
 };
 #endif  // MAINWINDOW_H
