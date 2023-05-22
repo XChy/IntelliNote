@@ -132,7 +132,7 @@ int NoteManager::removeNote(const Note &note)
     if (!QFile::remove(note.path)) return 2;
 
     // remove from directories
-    auto notelist = dirToNotes[note.dir];
+    auto &notelist = dirToNotes[note.dir];
     for (int i = 0; i < notelist.size(); ++i) {
         if (note.name == notelist[i].name && note.dir == notelist[i].dir) {
             notelist.remove(i);

@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <qabstractitemmodel.h>
+#include <qcoreevent.h>
+#include <qmenu.h>
 #include <qstandarditemmodel.h>
 #include <QMainWindow>
 #include "Dialogs/PromptGenerateDialog.h"
@@ -32,7 +34,19 @@ class MainWindow : public QMainWindow
 
     void onOpen(const QModelIndex &index);
 
+    void onMenuForManager(const QPoint &pos);
+
+    bool eventFilter(QObject *w, QEvent *e);
+
     void switchNote(const Note &note);
+
+    bool isNoteItem(const QModelIndex &index);
+    bool isNoteBookItem(const QModelIndex &index);
+    bool isNoteBooksItem(const QModelIndex &index);
+    bool isTagItem(const QModelIndex &index);
+    bool isTagsItem(const QModelIndex &index);
+    QString textForIndex(const QModelIndex &index);
+    Note noteForIndex(const QModelIndex &index);
 
     void setupModel();
 
@@ -44,6 +58,8 @@ class MainWindow : public QMainWindow
     PromptGenerateDialog *generateDialog;
     NewNoteDialog *newNoteDialog;
     ImportNoteDialog *importNoteDialog;
+
+    QMenu *menuForManager;
 
     QStandardItemModel *model;
 

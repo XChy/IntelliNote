@@ -59,6 +59,7 @@ set(PROJECT_SOURCES
     Dialogs/NewNoteDialog.cpp
     Dialogs/NewNoteDialog.ui
     Dialogs/ImportNoteDialog.h Dialogs/ImportNoteDialog.cpp Dialogs/ImportNoteDialog.ui
+   Dialogs/NewNoteBookDialog.h Dialogs/NewNoteBookDialog.cpp Dialogs/NewNoteBookDialog.ui
     ${QRC_FILES}
     ${TS_FILES})
 

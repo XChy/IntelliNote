@@ -27,4 +27,9 @@ Note NewNoteDialog::getNote() const
     return note;
 }
 
+void NewNoteDialog::setCurrentDir(const QString &notebook)
+{
+    ui->comboBox->setCurrentText(notebook);
+}
+
 NewNoteDialog::~NewNoteDialog() { delete ui; }
