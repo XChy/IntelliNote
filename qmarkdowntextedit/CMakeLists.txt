@@ -24,7 +24,7 @@ endif(WIN32)
 
 # QMarkdownTextEdit library
 set(RC_FILES
-    media.qrc
+        media.qrc
 )
 
 # Translations arent loaded so don't include them
@@ -42,7 +42,7 @@ set(QMARKDOWNTEXTEDIT_SOURCES
     qownlanguagedata.cpp
     qownlanguagedata.h
     qplaintexteditsearchwidget.cpp
-    qplaintexteditsearchwidget.ui
+        qplaintexteditsearchwidget.ui
 )
 set(QMARKDOWNTEXTEDIT_HEADERS
     markdownhighlighter.h

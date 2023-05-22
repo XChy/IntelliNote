@@ -28,9 +28,11 @@ set(TS_FILES IntelliNote_zh_CN.ts)
 set(MYLIBS
     Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::WebEngineWidgets
     Qt${QT_VERSION_MAJOR}::WebChannel Qt${QT_VERSION_MAJOR}::Network
-    qmarkdowntextedit)
+        qmarkdowntextedit)
 
 qt_add_resources(QRC_FILES "res.qrc")
+qt_add_resources(QRC_FILES "qdarkstyle/dark/darkstyle.qrc")
+qt_add_resources(QRC_FILES "qlightstyle/light/lightstyle.qrc")
 source_group("Resource Files" FILES "res.qrc")
 
 add_subdirectory(qmarkdowntextedit)
@@ -106,7 +108,7 @@ target_link_libraries(
           Qt${QT_VERSION_MAJOR}::WebEngineWidgets
           Qt${QT_VERSION_MAJOR}::WebChannel
           Qt${QT_VERSION_MAJOR}::Network
-          qmarkdowntextedit)
+        qmarkdowntextedit)
 
 set_target_properties(
   IntelliNote
