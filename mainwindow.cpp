@@ -3,8 +3,13 @@
 #include <qaction.h>
 #include <QScrollBar>
 #include <QMessageBox>
+#include <qdialog.h>
+#include <qevent.h>
+#include <qkeysequence.h>
 #include <qlist.h>
 #include <qmessagebox.h>
+#include <qnamespace.h>
+#include <qplaintextedit.h>
 #include <qpoint.h>
 #include <qscrollbar.h>
 #include <qstandarditemmodel.h>
@@ -17,6 +22,7 @@
 #include <qtextedit.h>
 #include <qtreeview.h>
 #include "./ui_mainwindow.h"
+#include "Dialogs/NewNoteBookDialog.h"
 #include "Dialogs/PromptGenerateDialog.h"
 #include "GPTSession.h"
 #include "NoteManager.h"
@@ -42,7 +48,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     // context menu for editor
     ui->textEdit->setContextMenuPolicy(Qt::CustomContextMenu);
-    QMenu* contextMenu = new QMenu(ui->textEdit);
+    QMenu* menuForEdittor = new QMenu(ui->textEdit);
 
     QAction* copy_action = new QAction(tr("复制"));
     connect(copy_action, &QAction::triggered, ui->textEdit,
@@ -64,14 +70,21 @@ MainWindow::MainWindow(QWidget* parent)
     connect(generate_latex_action, &QAction::triggered, this,
             &MainWindow::onGenerateLatex);
 
-    contextMenu->addActions({copy_action, paste_action, cut_action,
-                             generate_content_action, generate_latex_action});
+    menuForEdittor->addActions({copy_action, paste_action, cut_action,
+                                generate_content_action,
+                                generate_latex_action});
+
+    // context menu for the note manager
+    menuForManager = new QMenu(ui->noteManager);
+    connect(ui->noteManager, &QTreeView::customContextMenuRequested, this,
+            &MainWindow::onMenuForManager);
 
     // textEdit
     connect(ui->textEdit, &QPlainTextEdit::customContextMenuRequested,
-            [contextMenu, this](QPoint pos) {
-                contextMenu->exec(ui->textEdit->mapToGlobal(pos));
+            [menuForEdittor, this](QPoint pos) {
+                menuForEdittor->exec(ui->textEdit->mapToGlobal(pos));
             });
+
     connect(ui->textEdit, &QPlainTextEdit::modificationChanged,
             [this](bool isModified) {
                 if (isModified)
@@ -79,6 +92,7 @@ MainWindow::MainWindow(QWidget* parent)
                 else
                     ui->nameLabel->setText(currentNote.name);
             });
+    ui->textEdit->installEventFilter(this);
 
     // topbox
     connect(ui->actionNewNote, &QAction::triggered, this,
@@ -164,6 +178,7 @@ void MainWindow::onNewNote()
         } else {
             QMessageBox::information(NULL, tr("Succeed creating new note"),
                                      tr("Succeed creating new note"));
+            switchNote(note);
         }
     }
 }
@@ -193,24 +208,80 @@ void MainWindow::onImportNote()
 void MainWindow::onOpen(const QModelIndex& index)
 {
     auto item = model->itemFromIndex(index);
-    if (item->parent() && item->parent()->parent()) {
-        if (item->parent()->parent() == notebooks_item) {
-            Note note;
-            note.dir = item->parent()->text();
-            note.name = item->text();
-            note.path = noteManager->pathForInternal(note);
-            switchNote(note);
-        } else if (item->parent()->parent() == tags_item) {
-            QString tag = item->parent()->text();
-            auto notes = noteManager->notesOfTag(tag);
-            for (auto note : notes) {
-                if (note.name == item->text()) {
-                    switchNote(note);
-                    break;
+    if (isNoteItem(index)) {
+        switchNote(noteForIndex(index));
+    }
+}
+
+void MainWindow::onMenuForManager(const QPoint& pos)
+{
+    menuForManager->clear();
+    QModelIndex curIndex = ui->noteManager->indexAt(pos);
+
+    if (curIndex.isValid()) {
+        if (isNoteItem(curIndex)) {
+            menuForManager->addAction(tr("Remove"), [this, curIndex]() {
+                noteManager->removeNote(noteForIndex(curIndex));
+            });
+
+            menuForManager->addAction(tr("Tag"), [this, curIndex]() {
+                // TODO: tag dialog
+            });
+        } else if (isNoteBookItem(curIndex)) {
+            menuForManager->addAction(tr("New Note"), [this, curIndex]() {
+                newNoteDialog->setCurrentDir(textForIndex(curIndex));
+                onNewNote();
+            });
+
+            menuForManager->addAction(tr("Remove"), [this, curIndex]() {
+                // TODO: Question Message Box
+                noteManager->removeDir(textForIndex(curIndex));
+            });
+        } else if (isTagItem(curIndex)) {
+            menuForManager->addAction(tr("New Note"), [this, curIndex]() {
+                newNoteDialog->setCurrentDir(textForIndex(curIndex));
+                onNewNote();
+            });
+
+            menuForManager->addAction(tr("Remove"), [this, curIndex]() {
+                // TODO: Question Message Box
+                noteManager->removeDir(textForIndex(curIndex));
+            });
+        } else if (isNoteBooksItem(curIndex)) {
+            menuForManager->addAction(tr("New Notebook"), [this, curIndex]() {
+                NewNoteBookDialog dialog(this);
+                if (dialog.exec() == QDialog::Accepted) {
+                    int err = noteManager->createDir(dialog.notebook());
+                    if (err != 0) {
+                        QMessageBox::critical(this,
+                                              tr("Fail creating notebook"),
+                                              tr("Fail creating notebook"));
+                    }
                 }
-            }
+            });
+
+            menuForManager->addAction(tr("New Note"), [this, curIndex]() {
+                newNoteDialog->setCurrentDir(textForIndex(curIndex));
+                onNewNote();
+            });
+        }
+
+        menuForManager->exec(ui->noteManager->mapToGlobal(pos));
+    }
+}
+
+bool MainWindow::eventFilter(QObject* w, QEvent* e)
+{
+    if (e->type() == QEvent::KeyPress) {
+        QKeyEvent* key_e = (QKeyEvent*)e;
+        if (key_e->modifiers() == Qt::ControlModifier &&
+            key_e->key() == Qt::Key_S) {
+            noteManager->saveNote(currentNote, ui->textEdit->toPlainText());
+            ui->textEdit->setPlainText(ui->textEdit->toPlainText());
+            return true;
         }
     }
+    return false;
 }
 
 void MainWindow::switchNote(const Note& note)
@@ -218,7 +289,7 @@ void MainWindow::switchNote(const Note& note)
     if (ui->textEdit->document()->isModified()) {
         if (QMessageBox::question(
                 NULL, tr("One note remains unsaved"),
-                tr("Do you want to save the note %1").arg(currentNote.name),
+                tr("Do you want to save the note %1 ?").arg(currentNote.name),
                 QMessageBox::Save | QMessageBox::Discard) ==
             QMessageBox::Save) {
             noteManager->saveNote(currentNote, ui->textEdit->toPlainText());
@@ -231,9 +302,68 @@ void MainWindow::switchNote(const Note& note)
     ui->nameLabel->setText(note.name);
 }
 
+bool MainWindow::isNoteItem(const QModelIndex& index)
+{
+    auto item = model->itemFromIndex(index);
+    return item->parent() && item->parent()->parent();
+}
+
+bool MainWindow::isNoteBookItem(const QModelIndex& index)
+{
+    auto item = model->itemFromIndex(index);
+    return item->parent() && item->parent() == notebooks_item;
+}
+bool MainWindow::isNoteBooksItem(const QModelIndex& index)
+{
+    auto item = model->itemFromIndex(index);
+    return item == notebooks_item;
+}
+
+bool MainWindow::isTagItem(const QModelIndex& index)
+{
+    auto item = model->itemFromIndex(index);
+    return item->parent() && item->parent() == tags_item;
+}
+
+bool MainWindow::isTagsItem(const QModelIndex& index)
+{
+    auto item = model->itemFromIndex(index);
+    return item == tags_item;
+}
+
+Note MainWindow::noteForIndex(const QModelIndex& index)
+{
+    auto item = model->itemFromIndex(index);
+    if (item->parent()->parent() == notebooks_item) {
+        Note note;
+        note.dir = item->parent()->text();
+        note.name = item->text();
+        note.path = noteManager->pathForInternal(note);
+        return note;
+    } else if (item->parent()->parent() == tags_item) {
+        QString tag = item->parent()->text();
+        auto notes = noteManager->notesOfTag(tag);
+        for (auto note : notes) {
+            if (note.name == item->text()) {
+                return note;
+            }
+        }
+    }
+
+    return Note();
+}
+
+QString MainWindow::textForIndex(const QModelIndex& index)
+{
+    return model->itemFromIndex(index)->text();
+}
+
 void MainWindow::setupModel()
 {
     model->clear();
+
+    notebooks_item = new QStandardItem(tr("Notebooks"));
+    tags_item = new QStandardItem(tr("Tag"));
 
     for (QString notebook : noteManager->allDirs()) {
         QStandardItem* notebook_item = new QStandardItem(notebook);

@@ -20,6 +20,8 @@ class NewNoteDialog : public QDialog
 
     Note getNote() const;
 
+    void setCurrentDir(const QString &notebook);
+
    private:
     Ui::NewNoteDialog *ui;
     Note newNote;
