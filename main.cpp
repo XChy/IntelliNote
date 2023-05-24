@@ -10,12 +10,11 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     QFile f(":qdarkstyle/dark/darkstyle.qss");
     QFile f2(":qlightstyle/light/lightstyle.qss");
-    if (!f.exists())   {
+    if (!f2.exists()) {
         printf("Unable to set stylesheet, file not found\n");
-    }
-    else   {
-        f.open(QFile::ReadOnly | QFile::Text);
-        QTextStream ts(&f);
+    } else {
+        f2.open(QFile::ReadOnly | QFile::Text);
+        QTextStream ts(&f2);
         a.setStyleSheet(ts.readAll());
     }
     QTranslator translator;

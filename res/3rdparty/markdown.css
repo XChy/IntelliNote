@@ -1,11 +1,10 @@
 body {
   margin: 0 auto;
   font-family: Georgia, Palatino, serif;
-  color: #eee6e6;
+  color: #444444;
   line-height: 1;
   max-width: 960px;
   padding: 30px;
-  background-color: #19232d;
 }
 h1,
 h2,
@@ -247,3 +246,4 @@ td {
   padding: 5px;
   margin: 4px;
 }
+
