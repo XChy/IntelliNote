@@ -21,18 +21,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
-        with:
-          version: "6.2.*"
-          host: "linux"
-          target: "desktop"
-          dir: "${{ github.workspace }}/example/"
-          install-deps: "true"
-          modules: "qtwebengine"
-          archives: "qtbase qtsvg"
-          cache: "false"
-          cache-key-prefix: "install-qt-action"
-          set-env: "true"
+        run: sudo apt install qt6-base-dev qt6-webengine-dev
 
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
