@@ -22,7 +22,7 @@ jobs:
 
       - name: Install Qt
         run: pip install yaqti &&
-          python -m yaqti install --os linux --platform desktop --version 6.5.0 --modules qtwebengine qtwebchannel qtnetwork
+          python -m yaqti install --os linux --platform desktop --version 6.5.0 --modules qtwebengine
 
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
