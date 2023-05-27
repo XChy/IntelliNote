@@ -1,20 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ImportNoteDialog</class>
- <widget class="QDialog" name="ImportNoteDialog">
+ <class>RenameDialog</class>
+ <widget class="QDialog" name="RenameDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>434</width>
+    <height>163</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="2" column="0" colspan="3">
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>原名:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="oldEdit">
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>新名:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="newEdit"/>
+   </item>
+   <item row="2" column="0" colspan="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -24,33 +48,6 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="2">
-    <widget class="QPushButton" name="pushButton">
-     <property name="text">
-      <string>打开文件</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QLineEdit" name="lineEdit"/>
-   </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>文件路径</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>类型</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1" colspan="2">
-    <widget class="QComboBox" name="comboBox"/>
-   </item>
   </layout>
  </widget>
  <resources/>
@@ -58,7 +55,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>ImportNoteDialog</receiver>
+   <receiver>RenameDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -74,7 +71,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>ImportNoteDialog</receiver>
+   <receiver>RenameDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

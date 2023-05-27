@@ -88,6 +88,14 @@ class NoteManager : public QObject
     int renameNote(const Note &note, QString new_name);
 
     /******************************************************************************
+     * Function: renameNote
+     * Return:
+     * 0 : succeed
+     * 1 : fail
+     *****************************************************************************/
+    int renameDir(const QString &old_dir, const QString &new_dir);
+
+    /******************************************************************************
      * Function: readNote
      * Return:
      * the content of the note
@@ -122,12 +130,26 @@ class NoteManager : public QObject
     int saveTags();
 
     /******************************************************************************
+     * Function: tagsFor
+     * Return: all tags of a note
+     *****************************************************************************/
+    QStringList tagsFor(const Note &note) const;
+
+    /******************************************************************************
      * Function: tagNote
      * Return:
      * 0 : succeed
      * 1 : fail
      *****************************************************************************/
     int tagNote(const Note &note, const QString &tag);
+
+    /******************************************************************************
+     * Function: tagNote
+     * Return:
+     * 0 : succeed
+     * 1 : fail
+     *****************************************************************************/
+    int untagNote(const Note &note, const QString &tag);
 
     /******************************************************************************
      * Function: getNotes

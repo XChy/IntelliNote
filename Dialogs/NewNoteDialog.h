@@ -1,6 +1,7 @@
 #ifndef NEWNOTEDIALOG_H
 #define NEWNOTEDIALOG_H
 
+#include <qlist.h>
 #include <QDialog>
 #include "Note.h"
 #include "NoteManager.h"
@@ -19,6 +20,7 @@ class NewNoteDialog : public QDialog
     ~NewNoteDialog();
 
     Note getNote() const;
+    QList<QString> tags() const;
 
     void setCurrentDir(const QString &notebook);
 

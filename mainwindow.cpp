@@ -1,10 +1,10 @@
 #include "mainwindow.h"
-#include <qabstractitemmodel.h>
 #include <qaction.h>
 #include <QScrollBar>
 #include <QMessageBox>
 #include <qdialog.h>
 #include <qevent.h>
+#include <qfont.h>
 #include <qkeysequence.h>
 #include <qlist.h>
 #include <qmessagebox.h>
@@ -20,11 +20,13 @@
 #include <ios>
 #include <qmarkdowntextedit/markdownhighlighter.h>
 #include <qtextedit.h>
+#include <qtmetamacros.h>
 #include <qtreeview.h>
 #include "./ui_mainwindow.h"
 #include "Dialogs/NewNoteBookDialog.h"
 #include "Dialogs/PromptGenerateDialog.h"
-#include "GPTSession.h"
+#include "Dialogs/RenameDialog.h"
+#include "Dialogs/TagDialog.h"
 #include "NoteManager.h"
 #include <QFile>
 
@@ -77,9 +79,18 @@ MainWindow::MainWindow(QWidget* parent)
     connect(generate_latex_action, &QAction::triggered, this,
             &MainWindow::onGenerateLatex);
 
+    QAction* generate_outline_action = new QAction(tr("生成大纲"));
+    connect(generate_outline_action, &QAction::triggered, this,
+            &MainWindow::onGenerateOutline);
+
+    QAction* generate_summary_action = new QAction(tr("生成总结"));
+    connect(generate_summary_action, &QAction::triggered, this,
+            &MainWindow::onGenerateSummary);
+
     menuForEdittor->addActions({copy_action, paste_action, cut_action,
-                                generate_content_action,
-                                generate_latex_action});
+                                generate_content_action, generate_latex_action,
+                                generate_outline_action,
+                                generate_summary_action});
 
     // context menu for the note manager
     menuForManager = new QMenu(ui->noteManager);
@@ -115,6 +126,7 @@ MainWindow::MainWindow(QWidget* parent)
             &MainWindow::onImportNote);
 
     // Note Manager
+    currentNote.type = Note::NoNote;
     noteManager->setNotesDirectory(
         QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) +
         "/IntelliNote");
@@ -128,9 +140,6 @@ MainWindow::MainWindow(QWidget* parent)
     ui->noteManager->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->noteManager->header()->setVisible(false);
 
-    connect(noteManager, &NoteManager::noteChanged, this,
-            &MainWindow::setupModel);
-
     // Model
     connect(ui->noteManager, &QTreeView::doubleClicked, this,
             &MainWindow::onOpen);
@@ -138,6 +147,7 @@ MainWindow::MainWindow(QWidget* parent)
     // sync the preview page with the editor
     connect(ui->textEdit, &QPlainTextEdit::textChanged,
             [=]() { ui->viewer->setText(ui->textEdit->toPlainText()); });
+
     connect(
         ui->textEdit->verticalScrollBar(), &QScrollBar::valueChanged,
         [this](int value) {
@@ -170,6 +180,37 @@ void MainWindow::onGenerateLatex()
     }
 }
 
+void MainWindow::onGenerateOutline()
+{
+    generateDialog->clear();
+    generateDialog->setPromptPattern(
+        tr("Please generate an outline in markdown without "
+           "explanation as described "
+           "below:\\n%1\\n ."));
+    if (generateDialog->exec() == QDialog::Accepted) {
+        ui->textEdit->insertPlainText(generateDialog->getResult());
+    }
+}
+
+void MainWindow::onGenerateSummary()
+{
+    QString text;
+    if (ui->textEdit->textCursor().selectedText().isEmpty()) {
+        text = ui->textEdit->toPlainText();
+    } else {
+        text = ui->textEdit->textCursor().selectedText();
+    }
+
+    generateDialog->clear();
+    generateDialog->setPromptPattern(
+        tr(R"(请帮我总结一下这一段笔记内容，要求是只要你的总结内容，不需要其他内容，概括尽可能简介，字数在50-100左右，可以根据文本长度微调，并且以markdown格式呈现:%1)")
+            .arg(text));
+
+    if (generateDialog->exec() == QDialog::Accepted) {
+        ui->textEdit->insertPlainText(generateDialog->getResult());
+    }
+}
+
 void MainWindow::onNewNote()
 {
     if (newNoteDialog->exec() == QDialog::Accepted) {
@@ -185,6 +226,10 @@ void MainWindow::onNewNote()
         } else {
             QMessageBox::information(NULL, tr("Succeed creating new note"),
                                      tr("Succeed creating new note"));
+            for (auto tag : newNoteDialog->tags()) {
+                noteManager->tagNote(note, tag);
+            }
+            emit noteManager->noteChanged();
             switchNote(note);
         }
     }
@@ -231,19 +276,41 @@ void MainWindow::onMenuForManager(const QPoint& pos)
                 noteManager->removeNote(noteForIndex(curIndex));
             });
 
-            menuForManager->addAction(tr("Tag"), [this, curIndex]() {
-                // TODO: tag dialog
+            menuForManager->addAction(tr("Rename"), [this, curIndex]() {
+                // TODO: rename dialog
+                RenameDialog dialog;
+                dialog.setOldName(noteForIndex(curIndex).name);
+                if (dialog.exec() == QDialog::Accepted) {
+                    int err = noteManager->renameNote(noteForIndex(curIndex),
+                                                      dialog.getNewName());
+                }
             });
+
+            menuForManager->addAction(tr("Tag"), [this, curIndex]() {
+                TagDialog dialog(nullptr, noteManager, noteForIndex(curIndex));
+                if (dialog.exec() == QDialog::Accepted) {
+                    auto tagsToAdd = dialog.tagsToAdd();
+                    auto tagsToRemove = dialog.tagsToRemove();
+                    for (auto tag : tagsToAdd)
+                        noteManager->tagNote(noteForIndex(curIndex), tag);
+                    for (auto tag : tagsToRemove)
+                        noteManager->untagNote(noteForIndex(curIndex), tag);
+                    emit noteManager->noteChanged();
+                }
+            });
+
         } else if (isNoteBookItem(curIndex)) {
             menuForManager->addAction(tr("New Note"), [this, curIndex]() {
                 newNoteDialog->setCurrentDir(textForIndex(curIndex));
                 onNewNote();
             });
 
-            menuForManager->addAction(tr("Remove"), [this, curIndex]() {
-                // TODO: Question Message Box
-                noteManager->removeDir(textForIndex(curIndex));
-            });
+            menuForManager->addAction(
+                tr("Remove this notebook"), [this, curIndex]() {
+                    // TODO: Question Message Box
+                    noteManager->removeDir(textForIndex(curIndex));
+                });
+
         } else if (isTagItem(curIndex)) {
             menuForManager->addAction(tr("New Note"), [this, curIndex]() {
                 newNoteDialog->setCurrentDir(textForIndex(curIndex));
@@ -279,6 +346,7 @@ void MainWindow::onMenuForManager(const QPoint& pos)
 
 bool MainWindow::eventFilter(QObject* w, QEvent* e)
 {
+    // handle ctrl + s
     if (e->type() == QEvent::KeyPress) {
         QKeyEvent* key_e = (QKeyEvent*)e;
         if (key_e->modifiers() == Qt::ControlModifier &&
@@ -304,9 +372,13 @@ void MainWindow::switchNote(const Note& note)
     }
 
     currentNote = note;
-
-    ui->textEdit->setPlainText(noteManager->readNote(note));
-    ui->nameLabel->setText(note.name);
+    if (note.type != Note::NoNote) {
+        ui->textEdit->setPlainText(noteManager->readNote(note));
+        ui->nameLabel->setText(note.name);
+    } else {
+        ui->textEdit->setPlainText("");
+        ui->nameLabel->setText(tr("未命名"));
+    }
 }
 
 bool MainWindow::isNoteItem(const QModelIndex& index)
@@ -369,8 +441,15 @@ void MainWindow::setupModel()
 {
     model->clear();
 
+    auto font = QFont();
+    font.setPointSize(14);
+    font.setBold(true);
+
     notebooks_item = new QStandardItem(tr("Notebooks"));
-    tags_item = new QStandardItem(tr("Tag"));
+    tags_item = new QStandardItem(tr("Tags"));
+
+    notebooks_item->setFont(font);
+    tags_item->setFont(font);
 
     for (QString notebook : noteManager->allDirs()) {
         QStandardItem* notebook_item = new QStandardItem(notebook);
@@ -388,6 +467,9 @@ void MainWindow::setupModel()
 
     model->appendRow(notebooks_item);
     model->appendRow(tags_item);
+
+    ui->noteManager->expand(notebooks_item->index());
+    ui->noteManager->expand(tags_item->index());
 }
 
 MainWindow::~MainWindow() { delete ui; }

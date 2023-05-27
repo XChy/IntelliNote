@@ -14,7 +14,8 @@ struct Note {
         ExternalNote,
 
         // Inner note is the imported notes with directory and tags
-        InnerNote
+        InnerNote,
+        NoNote
     };
 
     friend QDataStream& operator<<(QDataStream& output, const Note& note)
