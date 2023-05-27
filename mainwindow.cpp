@@ -280,10 +280,15 @@ void MainWindow::onMenuForManager(const QPoint& pos)
             });
 
             menuForManager->addAction(tr("Tag"), [this, curIndex]() {
-                TagDialog dialog(nullptr, noteManager, currentNote);
+                TagDialog dialog(nullptr, noteManager, noteForIndex(curIndex));
                 if (dialog.exec() == QDialog::Accepted) {
                     auto tagsToAdd = dialog.tagsToAdd();
                     auto tagsToRemove = dialog.tagsToRemove();
+                    for (auto tag : tagsToAdd)
+                        noteManager->tagNote(noteForIndex(curIndex), tag);
+                    for (auto tag : tagsToRemove)
+                        noteManager->untagNote(noteForIndex(curIndex), tag);
+                    emit noteManager->noteChanged();
                 }
             });
 

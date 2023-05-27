@@ -280,6 +280,24 @@ int NoteManager::saveTags()
     return 0;
 }
 
+QStringList NoteManager::tagsFor(const Note &note) const
+{
+    if (note.type == Note::NoNote) return {};
+
+    QList<QString> result;
+    for (QString tag : tagToNotes.keys()) {
+        bool found = false;
+        for (auto noteOfTag : tagToNotes[tag]) {
+            if (noteOfTag.name == note.name && noteOfTag.dir == note.dir) {
+                found = true;
+                break;
+            }
+        }
+        if (found) result << tag;
+    }
+    return result;
+}
+
 int NoteManager::tagNote(const Note &note, const QString &tag)
 {
     if (!tagToNotes.contains(tag)) tagToNotes[tag] = QList<Note>();
@@ -291,6 +309,25 @@ int NoteManager::tagNote(const Note &note, const QString &tag)
     }
 
     tagToNotes[tag].append(note);
+    saveTags();
+    return 0;
+}
+
+int NoteManager::untagNote(const Note &note, const QString &tag)
+{
+    if (!tagToNotes.contains(tag)) tagToNotes[tag] = QList<Note>();
+
+    int result = -1;
+    for (int i = 0; i < tagToNotes[tag].size(); ++i) {
+        if (note.name == tagToNotes[tag][i].name &&
+            note.dir == tagToNotes[tag][i].dir) {
+            result = i;
+        }
+    }
+
+    if (result == -1) return -1;
+
+    tagToNotes[tag].remove(result);
     saveTags();
     return 0;
 }
