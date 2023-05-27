@@ -5,8 +5,8 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
-static const char *default_APP_ID ="20230510001673359";
-static const char *default_KEY = "EbwY38JrInMB096odE4v";
+static const char *default_APP_ID ="0ce040985da12aff";
+static const char *default_KEY = "Gn7by7I5Rabj5CIAQjhLBnOX6dADstYl";
 class TransSession : public QObject
 {
     Q_OBJECT
