@@ -10,6 +10,9 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     TransSession *transSession = new TransSession(&app);
     printf("Connecting...\n");
+    ushort curtime=QDateTime::currentDateTimeUtc().toSecsSinceEpoch();
+    //change curtime to seconds;
+    printf("curtime: %d\n", curtime);
     QObject::connect(
             transSession, &TransSession::completed, [&app](QString response) {
                 if (response.isEmpty()) {

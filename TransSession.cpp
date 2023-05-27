@@ -15,31 +15,31 @@ TransSession::TransSession(QObject *parent)
       reply(nullptr)
 {
 }
-
 void TransSession::translate(const QString &words)
 {
-    // Step1. 将请求参数中的 APPID(appid)， 翻译
-    // query(q，注意为UTF-8编码)，随机数(salt)，以及平台分配的密钥(可在管理控制台查看)
-    // 按照 appid+q+salt+密钥的顺序拼接得到字符串 1。 Step2. 对字符串 1 做 MD5
-    // ，得到 32 位小写的 sign。 请求方式： 可使用 GET 或 POST 方式，如使用 POST
-    //方式，Content-Type 请指定为：application/x-www-form-urlencoded
-    //字符编码：统一采用 UTF-8 编码格式
-    // query 长度：为保证翻译质量，请将单次请求长度控制在 6000
-    // bytes以内（汉字约为输入参数 2000 个）
-    QUrl url("https://fanyi-api.baidu.com/api/trans/vip/translate");
+   //签名生成方法如下：
+    //signType=v3；
+    //sign=sha256(应用ID+input+salt+curtime+应用密钥)；
+    //其中，input的计算方式为：input=q前10个字符 + q长度 + q后10个字符（当q长度大于20）或 input=q字符串（当q长度小于等于20）；
+    QUrl url("https://openapi.youdao.com/api");
     QString salt = "123456";
-    QString sign =
-        QString(QCryptographicHash::hash((APP_ID + words + salt + KEY).toUtf8(),
-                                         QCryptographicHash::Md5)
+
+    //get current time by utc and change it into seconds as a string
+    ushort curtime=QDateTime::currentDateTimeUtc().toSecsSinceEpoch();
+    QString sign =QString(QCryptographicHash::hash((APP_ID + words + salt + QString(curtime) + KEY).toUtf8(),
+                                         QCryptographicHash::Sha256)
                     .toHex());
-    QString to = "zh";
+    QString to = "zh-CHS";
+    QString signtype = "v3";
     QUrlQuery query;
     query.addQueryItem("q", words.toUtf8());
     query.addQueryItem("from", "auto");
     query.addQueryItem("to", to);
-    query.addQueryItem("appid", APP_ID);
+    query.addQueryItem("appKey", default_APP_ID);
     query.addQueryItem("salt", salt);
     query.addQueryItem("sign", sign);
+    query.addQueryItem("signType", signtype);
+    query.addQueryItem("curtime", QString(curtime));
     url.setQuery(query);
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -49,26 +49,49 @@ void TransSession::translate(const QString &words)
     QObject::connect(reply, &QNetworkReply::finished, [this]() {
         if (reply->error() == QNetworkReply::NoError) {
             //{
-            //    "from": "en",
-            //    "to": "zh",
-            //    "trans_result": [
-            //        {
-            //            "src": "apple",
-            //            "dst": "苹果"
-            //        }
-            //    ]
+            //  "errorCode":"0",
+            //  "query":"good", //查询正确时，一定存在
+            //  "isDomainSupport":"true", //翻译结果是否为领域翻译(仅开通领域翻译时存在)
+            //  "translation": [ //查询正确时一定存在
+            //      "好"
+            //  ],
+            //  "basic":{ // 有道词典-基本词典,查词时才有
+            //      "phonetic":"gʊd",
+            //      "uk-phonetic":"gʊd", //英式音标
+            //      "us-phonetic":"ɡʊd", //美式音标
+            //      "uk-speech": "XXXX",//英式发音
+            //      "us-speech": "XXXX",//美式发音
+            //      "explains":[
+            //          "好处",
+            //          "好的",
+            //          "好",
+            //      ]
+            //  },
+            //  "web":[ // 有道词典-网络释义，该结果不一定存在
+            //      {
+            //          "key":"good",
+            //          "value":["良好","善","美好"]
+            //      },
+            //      {...}
+            //  ],
+            //  "dict":{
+            //      "url":"yddict://m.youdao.com/dict?le=eng&q=good"
+            //  },
+            //  "webdict":{
+            //      "url":"http://m.youdao.com/dict?le=eng&q=good"
+            //  },
+            //  "l":"EN2zh-CHS",
+            //  "tSpeakUrl":"XXX",//翻译后的发音地址
+            //  "speakUrl": "XXX" //查询文本的发音地址
             //}
             QString response = reply->readAll();
             // read the response from the json file and convert it to QString
             QJsonDocument jsonDoc = QJsonDocument::fromJson(response.toUtf8());
             // then get the text from the json file clear the " " and \n in both
             // sides
-            response = jsonDoc.object()
-                           .value("trans_result")
-                           .toArray()[0]
-                           .toObject()
-                           .value("dst")
-                           .toString();
+            /*response = jsonDoc.object()
+                           .value("translation")
+                            .toString();*/
             if (response.isEmpty())
                 response = jsonDoc.object().value("error_msg").toString();
             emit completed(response);
