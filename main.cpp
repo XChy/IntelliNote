@@ -7,12 +7,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QFile f(":qdarkstyle/dark/darkstyle.qss");
-    QFile f2(":qlightstyle/light/lightstyle.qss");
-    QFile f3(":qlightstyle/trial.qss");
-    f.open(QFile::ReadOnly );
-    a.setStyleSheet(f.readAll());
-    f.close();
+
     QTranslator translator;
     const QStringList uiLanguages = QLocale::system().uiLanguages();
     for (const QString &locale : uiLanguages) {
