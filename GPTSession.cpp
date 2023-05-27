@@ -28,11 +28,13 @@ void GPTSession::ask(const QString &prompt)
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", ("Bearer " + APIKey).toUtf8());
     // token means APIKey
+    QString processed_prompt = prompt;
+    processed_prompt.replace("\n", "\\n");
     reply = manager->post(request, QString(R"({
                                        "model" : "gpt-3.5-turbo",
                                        "messages": [{"role": "user", "content": "%1"}]
                                        })")
-                                       .arg(prompt)
+                                       .arg(processed_prompt)
                                        .toUtf8());
 
     QObject::connect(reply, &QNetworkReply::finished, [this]() {

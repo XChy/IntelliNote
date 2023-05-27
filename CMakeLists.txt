@@ -28,7 +28,7 @@ set(TS_FILES IntelliNote_zh_CN.ts)
 set(MYLIBS
     Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::WebEngineWidgets
     Qt${QT_VERSION_MAJOR}::WebChannel Qt${QT_VERSION_MAJOR}::Network
-        qmarkdowntextedit)
+    qmarkdowntextedit)
 
 qt_add_resources(QRC_FILES "res.qrc")
 qt_add_resources(QRC_FILES "qdarkstyle/dark/darkstyle.qrc")
@@ -58,8 +58,20 @@ set(PROJECT_SOURCES
     Dialogs/NewNoteDialog.h
     Dialogs/NewNoteDialog.cpp
     Dialogs/NewNoteDialog.ui
-    Dialogs/ImportNoteDialog.h Dialogs/ImportNoteDialog.cpp Dialogs/ImportNoteDialog.ui
-   Dialogs/NewNoteBookDialog.h Dialogs/NewNoteBookDialog.cpp Dialogs/NewNoteBookDialog.ui
+    Dialogs/ImportNoteDialog.h
+    Dialogs/ImportNoteDialog.cpp
+    Dialogs/ImportNoteDialog.ui
+    Dialogs/NewNoteBookDialog.h
+    Dialogs/NewNoteBookDialog.cpp
+    Dialogs/NewNoteBookDialog.ui
+    Dialogs/RenameDialog.h
+    Dialogs/RenameDialog.cpp
+    Dialogs/RenameDialog.ui
+    Dialogs/TagDialog.h
+    Dialogs/TagDialog.cpp
+    Dialogs/TagDialog.ui
+    tags.h
+    tags.cpp
     ${QRC_FILES}
     ${TS_FILES})
 
@@ -109,7 +121,7 @@ target_link_libraries(
           Qt${QT_VERSION_MAJOR}::WebEngineWidgets
           Qt${QT_VERSION_MAJOR}::WebChannel
           Qt${QT_VERSION_MAJOR}::Network
-        qmarkdowntextedit)
+          qmarkdowntextedit)
 
 set_target_properties(
   IntelliNote

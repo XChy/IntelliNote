@@ -28,6 +28,8 @@ class MainWindow : public QMainWindow
 
     void onGenerateContent();
     void onGenerateLatex();
+    void onGenerateOutline();
+    void onGenerateSummary();
 
     void onNewNote();
     void onImportNote();

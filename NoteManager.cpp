@@ -165,7 +165,75 @@ int NoteManager::removeDir(const QString &dir)
         if (notes[i].dir == dir) notes.remove(i);
     }
 
-    QDir(notesDirectory + "/" + dir).removeRecursively();
+    QDir(notesDirectory + "/Notes/" + dir).removeRecursively();
+
+    emit noteChanged();
+    return 0;
+}
+
+int NoteManager::renameNote(const Note &note, QString new_name)
+{
+    if (note.name == new_name) return 0;
+
+    for (Note &found : dirToNotes[note.dir]) {
+        if (found.name == new_name) {
+            return 1;
+        }
+    }
+
+    for (Note &found : dirToNotes[note.dir]) {
+        if (found.name == note.name) {
+            QFile(note.path).rename(
+                note.path.left(note.path.lastIndexOf("/") + 1) + new_name);
+            found.name = new_name;
+
+            for (Note &foundInAll : notes) {
+                if (foundInAll.name == note.name &&
+                    foundInAll.dir == note.dir) {
+                    foundInAll.name = new_name;
+                }
+            }
+
+            for (auto notesOfTag : tagToNotes.values()) {
+                for (Note &foundInTag : notesOfTag) {
+                    if (foundInTag.name == note.name &&
+                        foundInTag.dir == note.dir) {
+                        foundInTag.name = new_name;
+                    }
+                }
+            }
+
+            emit noteChanged();
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+int NoteManager::renameDir(const QString &old_dir, const QString &new_dir)
+{
+    if (old_dir == new_dir) return 0;
+
+    if (dirToNotes.contains(new_dir)) {
+        return 1;
+    }
+
+    createDir(new_dir);
+
+    for (Note &found : dirToNotes[old_dir]) {
+        found.dir = new_dir;
+    }
+
+    for (Note &foundInAll : notes) {
+        if (foundInAll.dir == old_dir) foundInAll.dir = new_dir;
+    }
+
+    for (auto notesOfTag : tagToNotes.values()) {
+        for (Note &foundInTag : notesOfTag) {
+            if (foundInTag.dir == old_dir) foundInTag.dir = new_dir;
+        }
+    }
 
     emit noteChanged();
     return 0;
