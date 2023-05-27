@@ -31,8 +31,8 @@ set(MYLIBS
         qmarkdowntextedit)
 
 qt_add_resources(QRC_FILES "res.qrc")
-qt_add_resources(QRC_FILES "qdarkstyle/dark/darkstyle.qrc")
-qt_add_resources(QRC_FILES "qlightstyle/light/lightstyle.qrc")
+qt_add_resources(QRC_FILES "qdarkstyle/dark/lightstyle.qrc")
+qt_add_resources(QRC_FILES "qlightstyle/darkstyle.qrc")
 source_group("Resource Files" FILES "res.qrc")
 
 add_subdirectory(qmarkdowntextedit)
