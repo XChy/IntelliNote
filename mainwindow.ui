@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>876</width>
-    <height>600</height>
+    <width>1054</width>
+    <height>755</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -51,7 +51,7 @@
            </widget>
           </item>
           <item>
-           <widget class="MDViewer" name="viewer">
+           <widget class="MDViewer" name="viewer" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -76,7 +76,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>876</width>
+     <width>1054</width>
      <height>27</height>
     </rect>
    </property>
@@ -104,14 +104,14 @@
     <property name="title">
      <string>帮助</string>
     </property>
-    <addaction name="action_4"/>
-    <addaction name="action"/>
+    <addaction name="actionSetting"/>
+    <addaction name="actionAbout"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="action">
+  <action name="actionAbout">
    <property name="text">
     <string>关于IntelliNote</string>
    </property>
@@ -126,7 +126,7 @@
     <string>导入笔记</string>
    </property>
   </action>
-  <action name="action_4">
+  <action name="actionSetting">
    <property name="text">
     <string>设置</string>
    </property>
@@ -155,8 +155,8 @@
  <customwidgets>
   <customwidget>
    <class>MDViewer</class>
-   <extends>QFrame</extends>
-   <header location="global">MDViewer.h</header>
+   <extends>QWidget</extends>
+   <header>MDViewer.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

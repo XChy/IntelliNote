@@ -70,6 +70,12 @@ set(PROJECT_SOURCES
     Dialogs/TagDialog.h
     Dialogs/TagDialog.cpp
     Dialogs/TagDialog.ui
+    Dialogs/AboutDialog.h
+    Dialogs/AboutDialog.cpp
+    Dialogs/SummaryDialog.h
+    Dialogs/SummaryDialog.cpp
+    Dialogs/SummaryDialog.ui
+    Dialogs/AboutDialog.ui
     tags.h
     tags.cpp
     ${QRC_FILES}

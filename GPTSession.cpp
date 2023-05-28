@@ -1,4 +1,8 @@
 #include "GPTSession.h"
+#include <qjsonarray.h>
+#include <qjsondocument.h>
+#include <qjsonobject.h>
+#include <qjsonvalue.h>
 #include <qnetworkaccessmanager.h>
 #include <QCoreApplication>
 
@@ -28,22 +32,22 @@ void GPTSession::ask(const QString &prompt)
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", ("Bearer " + APIKey).toUtf8());
     // token means APIKey
-    QString processed_prompt = prompt;
-    processed_prompt.replace("\n", "\\n");
-    reply = manager->post(request, QString(R"({
-                                       "model" : "gpt-3.5-turbo",
-                                       "messages": [{"role": "user", "content": "%1"}]
-                                       })")
-                                       .arg(processed_prompt)
-                                       .toUtf8());
+    QJsonDocument toPost;
+    toPost.setObject(QJsonObject{
+        {"model", "gpt-3.5-turbo"},
+        {"messages",
+         QJsonArray{QJsonObject{{"role", "user"}, {"content", prompt}}}}});
+
+    reply = manager->post(request, toPost.toJson());
 
     QObject::connect(reply, &QNetworkReply::finished, [this]() {
         if (reply->error() == QNetworkReply::NoError) {
             QString response = QString::fromUtf8(reply->readAll());
-            // read the response from the json file and convert it to QString
+            // read the response from the json file and convert it to
+            // QString
             QJsonDocument jsonDoc = QJsonDocument::fromJson(response.toUtf8());
-            // then get the text from the json file clear the " " and \n in both
-            // sides
+            // then get the text from the json file clear the " " and \n in
+            // both sides
             response = jsonDoc.object()
                            .value("choices")
                            .toArray()[0]
