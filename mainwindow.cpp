@@ -8,6 +8,7 @@
 #include <qkeysequence.h>
 #include <qlist.h>
 #include <qmessagebox.h>
+#include <QFileDialog>
 #include <qnamespace.h>
 #include <qplaintextedit.h>
 #include <qpoint.h>
@@ -23,9 +24,11 @@
 #include <qtmetamacros.h>
 #include <qtreeview.h>
 #include "./ui_mainwindow.h"
+#include "Dialogs/AboutDialog.h"
 #include "Dialogs/NewNoteBookDialog.h"
 #include "Dialogs/PromptGenerateDialog.h"
 #include "Dialogs/RenameDialog.h"
+#include "Dialogs/SummaryDialog.h"
 #include "Dialogs/TagDialog.h"
 #include "NoteManager.h"
 #include <QFile>
@@ -110,11 +113,13 @@ MainWindow::MainWindow(QWidget* parent)
                 else
                     ui->nameLabel->setText(currentNote.name);
             });
+
     ui->textEdit->installEventFilter(this);
 
     // topbox
     connect(ui->actionNewNote, &QAction::triggered, this,
             &MainWindow::onNewNote);
+
     connect(ui->actionSaveNote, &QAction::triggered, [this]() {
         if (!currentNote.name.isEmpty()) {
             noteManager->saveNote(currentNote, ui->textEdit->toPlainText());
@@ -124,6 +129,25 @@ MainWindow::MainWindow(QWidget* parent)
 
     connect(ui->actionImportNote, &QAction::triggered, this,
             &MainWindow::onImportNote);
+
+    connect(ui->actionMarkdown, &QAction::triggered, [this]() {
+        QString path = QFileDialog::getSaveFileName(this, tr("导出为Markdown"));
+        QFile file(path);
+        file.open(QFile::WriteOnly);
+        file.write(ui->textEdit->toPlainText().toLocal8Bit());
+        file.close();
+    });
+
+    connect(ui->actionHTML, &QAction::triggered, [this]() {
+
+    });
+
+    connect(ui->actionPDF, &QAction::triggered, [this]() {
+        QString path = QFileDialog::getSaveFileName(this, tr("导出为PDF"));
+        ui->viewer->printToPdf(path);
+    });
+
+    connect(ui->actionAbout, &QAction::triggered, [this]() {});
 
     // Note Manager
     currentNote.type = Note::NoNote;
@@ -174,7 +198,7 @@ void MainWindow::onGenerateLatex()
     generateDialog->setPromptPattern(
         tr("Please generate pure latex code surrounded with $ without "
            "explanation as described "
-           "below:\\n%1\\n ."));
+           "below:\n%1"));
     if (generateDialog->exec() == QDialog::Accepted) {
         ui->textEdit->insertPlainText(generateDialog->getResult());
     }
@@ -186,7 +210,7 @@ void MainWindow::onGenerateOutline()
     generateDialog->setPromptPattern(
         tr("Please generate an outline in markdown without "
            "explanation as described "
-           "below:\\n%1\\n ."));
+           "below:\n%1"));
     if (generateDialog->exec() == QDialog::Accepted) {
         ui->textEdit->insertPlainText(generateDialog->getResult());
     }
@@ -201,14 +225,10 @@ void MainWindow::onGenerateSummary()
         text = ui->textEdit->textCursor().selectedText();
     }
 
-    generateDialog->clear();
-    generateDialog->setPromptPattern(
-        tr(R"(请帮我总结一下这一段笔记内容，要求是只要你的总结内容，不需要其他内容，概括尽可能简介，字数在50-100左右，可以根据文本长度微调，并且以markdown格式呈现:%1)")
-            .arg(text));
-
-    if (generateDialog->exec() == QDialog::Accepted) {
-        ui->textEdit->insertPlainText(generateDialog->getResult());
-    }
+    SummaryDialog dialog;
+    dialog.setText(text);
+    dialog.onGenerate();
+    dialog.exec();
 }
 
 void MainWindow::onNewNote()
@@ -361,6 +381,8 @@ bool MainWindow::eventFilter(QObject* w, QEvent* e)
 
 void MainWindow::switchNote(const Note& note)
 {
+    if (note.name == currentNote.name && note.dir == currentNote.dir) return;
+
     if (ui->textEdit->document()->isModified()) {
         if (QMessageBox::question(
                 NULL, tr("One note remains unsaved"),
