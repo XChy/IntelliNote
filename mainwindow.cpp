@@ -21,6 +21,7 @@
 #include <QToolTip>
 #include <ios>
 #include <qmarkdowntextedit/markdownhighlighter.h>
+#include <qtextcursor.h>
 #include <qtextedit.h>
 #include <qtmetamacros.h>
 #include <qtreeview.h>
@@ -257,8 +258,31 @@ void MainWindow::onContinueWriting()
 void MainWindow::onFetchContinualContent(const QString& content)
 {
     continualContent = content;
+    oldContent = ui->textEdit->toPlainText();
 
-    QToolTip::showText(ui->textEdit->mapToGlobal(QPoint{0, 0}), content);
+    hasVirtualText = true;
+    virtualTextIndex = ui->textEdit->textCursor().position();
+
+    ui->textEdit->appendHtml(
+        QStringLiteral(
+            "<span style='color: gray; font-style: italic;'>%1</span>")
+            .arg(content));
+
+    ui->textEdit->textCursor().setPosition(virtualTextIndex);
+}
+
+void MainWindow::onCompleteVirtualText()
+{
+    hasVirtualText = false;
+    ui->textEdit->clear();
+    ui->textEdit->appendPlainText(oldContent);
+    ui->textEdit->appendPlainText(continualContent);
+}
+void MainWindow::onDiscardVirtualText()
+{
+    hasVirtualText = false;
+    ui->textEdit->clear();
+    ui->textEdit->appendPlainText(oldContent);
 }
 
 void MainWindow::onNewNote()
@@ -414,6 +438,15 @@ bool MainWindow::eventFilter(QObject* w, QEvent* e)
             key_e->key() == Qt::Key_L) {
             onContinueWriting();
             return true;
+        }
+
+        if (key_e->key() == Qt::Key_Tab) {
+            onCompleteVirtualText();
+            return true;
+        }
+
+        if (hasVirtualText) {
+            onDiscardVirtualText();
         }
     }
     return false;

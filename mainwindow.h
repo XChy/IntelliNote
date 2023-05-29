@@ -32,6 +32,8 @@ class MainWindow : public QMainWindow
     void onGenerateSummary();
     void onContinueWriting();
     void onFetchContinualContent(const QString &content);
+    void onCompleteVirtualText();
+    void onDiscardVirtualText();
 
     void onNewNote();
     void onImportNote();
@@ -64,7 +66,6 @@ class MainWindow : public QMainWindow
     ImportNoteDialog *importNoteDialog;
 
     QMenu *menuForManager;
-    QString continualContent;
 
     QStandardItemModel *model;
 
@@ -72,5 +73,11 @@ class MainWindow : public QMainWindow
     QStandardItem *tags_item;
 
     Note currentNote;
+
+    // virtual text
+    bool hasVirtualText;
+    int virtualTextIndex;
+    QString continualContent;
+    QString oldContent;
 };
 #endif  // MAINWINDOW_H

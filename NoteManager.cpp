@@ -347,7 +347,12 @@ int NoteManager::untagNote(const Note &note, const QString &tag)
 
 QList<Note> NoteManager::allNotes() const { return notes; }
 
-QList<QString> NoteManager::allDirs() const { return dirToNotes.keys(); }
+QList<QString> NoteManager::allDirs() const
+{
+    auto dirs = dirToNotes.keys();
+    dirs.sort();
+    return dirs;
+}
 
 QStringList NoteManager::allTags() const
 {
