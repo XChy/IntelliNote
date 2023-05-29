@@ -31,6 +31,7 @@
 #include "Dialogs/SummaryDialog.h"
 #include "Dialogs/TagDialog.h"
 #include "NoteManager.h"
+#include <QFile>
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),
@@ -43,6 +44,12 @@ MainWindow::MainWindow(QWidget* parent)
       notebooks_item(new QStandardItem(tr("NoteBooks"))),
       tags_item(new QStandardItem(tr("Tags")))
 {
+    QFile f(":qdarkstyle/dark/darkstyle.qss");
+    QFile f2(":qlightstyle/light/lightstyle.qss");
+    QFile f3("://qlightstyle/trial.qss");
+    f.open(QFile::ReadOnly );
+    setStyleSheet(f.readAll());
+    f.close();
     ui->setupUi(this);
     ui->splitter->setStretchFactor(0, 1);
     ui->splitter->setStretchFactor(1, 3);

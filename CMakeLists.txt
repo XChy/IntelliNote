@@ -31,10 +31,10 @@ set(MYLIBS
     qmarkdowntextedit)
 
 qt_add_resources(QRC_FILES "res.qrc")
-qt_add_resources(QRC_FILES "qdarkstyle/dark/darkstyle.qrc")
-qt_add_resources(QRC_FILES "qlightstyle/light/lightstyle.qrc")
+qt_add_resources(QRC_FILES "qdarkstyle/dark/lightstyle.qrc")
+qt_add_resources(QRC_FILES "qlightstyle/darkstyle.qrc")
 source_group("Resource Files" FILES "res.qrc")
-
+set(RC_ICONS "res/icon/icon.ico")
 add_subdirectory(qmarkdowntextedit)
 
 set(PROJECT_SOURCES
@@ -102,7 +102,7 @@ if(BUILD_TEST)
 endif()
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-  qt_add_executable(IntelliNote MANUAL_FINALIZATION ${PROJECT_SOURCES})
+  qt_add_executable(IntelliNote MANUAL_FINALIZATION ${PROJECT_SOURCES} res/app.rc)
   # Define target properties for Android with Qt 6 as: set_property(TARGET
   # IntelliNote APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
   # ${CMAKE_CURRENT_SOURCE_DIR}/android) For more information, see

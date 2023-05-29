@@ -7,16 +7,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QFile f(":qdarkstyle/dark/darkstyle.qss");
-    QFile f2(":qlightstyle/light/lightstyle.qss");
-    QFile f3(":trial.qss");
-    if (!f2.exists()) {
-        printf("Unable to set stylesheet, file not found\n");
-    } else {
-        f3.open(QFile::ReadOnly | QFile::Text);
-        QTextStream ts(&f3);
-        a.setStyleSheet(ts.readAll());
-    }
+
     QTranslator translator;
     const QStringList uiLanguages = QLocale::system().uiLanguages();
     for (const QString &locale : uiLanguages) {
