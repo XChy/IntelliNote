@@ -18,6 +18,7 @@
 #include <qtextbrowser.h>
 #include <QStandardPaths>
 #include <QStandardItemModel>
+#include <QToolTip>
 #include <ios>
 #include <qmarkdowntextedit/markdownhighlighter.h>
 #include <qtextedit.h>
@@ -30,6 +31,7 @@
 #include "Dialogs/RenameDialog.h"
 #include "Dialogs/SummaryDialog.h"
 #include "Dialogs/TagDialog.h"
+#include "GPTSession.h"
 #include "NoteManager.h"
 #include <QFile>
 
@@ -47,7 +49,7 @@ MainWindow::MainWindow(QWidget* parent)
     QFile f(":qdarkstyle/dark/darkstyle.qss");
     QFile f2(":qlightstyle/light/lightstyle.qss");
     QFile f3("://qlightstyle/trial.qss");
-    f.open(QFile::ReadOnly );
+    f.open(QFile::ReadOnly);
     setStyleSheet(f.readAll());
     f.close();
     ui->setupUi(this);
@@ -143,7 +145,10 @@ MainWindow::MainWindow(QWidget* parent)
         ui->viewer->printToPdf(path);
     });
 
-    connect(ui->actionAbout, &QAction::triggered, [this]() {});
+    connect(ui->actionAbout, &QAction::triggered, [this]() {
+        AboutDialog dialog(this);
+        dialog.exec();
+    });
 
     // Note Manager
     currentNote.type = Note::NoNote;
@@ -227,7 +232,34 @@ void MainWindow::onGenerateSummary()
     dialog.exec();
 }
 
-void MainWindow::onContinueWriting() {}
+void MainWindow::onContinueWriting()
+{
+    GPTSession* session = new GPTSession(this);
+
+    connect(session, &GPTSession::responseReceived,
+            [this, session](const QString& response) {
+                onFetchContinualContent(response);
+                session->deleteLater();
+            });
+
+    connect(session, &GPTSession::errorOccured,
+            [this, session](const QString& errorMessage) {
+                QMessageBox::critical(
+                    NULL, tr("Failed"),
+                    tr("Failed to continue writing\n%1").arg(errorMessage));
+                session->deleteLater();
+            });
+
+    session->ask(
+        tr("续写以下笔记，只续写一句话：%1").arg(ui->textEdit->toPlainText()));
+}
+
+void MainWindow::onFetchContinualContent(const QString& content)
+{
+    continualContent = content;
+
+    QToolTip::showText(ui->textEdit->mapToGlobal(QPoint{0, 0}), content);
+}
 
 void MainWindow::onNewNote()
 {
@@ -299,6 +331,11 @@ void MainWindow::onMenuForManager(const QPoint& pos)
                 RenameDialog dialog;
                 dialog.setOldName(noteForIndex(curIndex).name);
                 if (dialog.exec() == QDialog::Accepted) {
+                    if (noteForIndex(curIndex) == currentNote) {
+                        currentNote.name = dialog.getNewName();
+                        ui->nameLabel->setText(currentNote.name);
+                    }
+
                     int err = noteManager->renameNote(noteForIndex(curIndex),
                                                       dialog.getNewName());
                 }
@@ -375,8 +412,7 @@ bool MainWindow::eventFilter(QObject* w, QEvent* e)
 
         if (key_e->modifiers() == Qt::ControlModifier &&
             key_e->key() == Qt::Key_L) {
-            noteManager->saveNote(currentNote, ui->textEdit->toPlainText());
-            ui->textEdit->setPlainText(ui->textEdit->toPlainText());
+            onContinueWriting();
             return true;
         }
     }

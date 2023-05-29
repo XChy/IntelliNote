@@ -31,6 +31,7 @@ class MainWindow : public QMainWindow
     void onGenerateOutline();
     void onGenerateSummary();
     void onContinueWriting();
+    void onFetchContinualContent(const QString &content);
 
     void onNewNote();
     void onImportNote();
@@ -63,6 +64,7 @@ class MainWindow : public QMainWindow
     ImportNoteDialog *importNoteDialog;
 
     QMenu *menuForManager;
+    QString continualContent;
 
     QStandardItemModel *model;
 
