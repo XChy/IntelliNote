@@ -171,6 +171,16 @@ int NoteManager::removeDir(const QString &dir)
     return 0;
 }
 
+int NoteManager::removeTag(const QString &dir)
+{
+    if (!tagToNotes.contains(dir)) return 1;
+
+    tagToNotes.remove(dir);
+    saveTags();
+    emit noteChanged();
+    return 0;
+}
+
 int NoteManager::renameNote(const Note &note, QString new_name)
 {
     if (note.name == new_name) return 0;
@@ -328,6 +338,9 @@ int NoteManager::untagNote(const Note &note, const QString &tag)
     if (result == -1) return -1;
 
     tagToNotes[tag].remove(result);
+
+    if (tagToNotes[tag].size() == 0) tagToNotes.remove(tag);
+
     saveTags();
     return 0;
 }
@@ -336,7 +349,12 @@ QList<Note> NoteManager::allNotes() const { return notes; }
 
 QList<QString> NoteManager::allDirs() const { return dirToNotes.keys(); }
 
-QStringList NoteManager::allTags() const { return tagToNotes.keys(); }
+QStringList NoteManager::allTags() const
+{
+    auto tags = tagToNotes.keys();
+    tags.sort();
+    return tags;
+}
 
 QList<Note> NoteManager::notesOfDir(const QString &dir) const
 {

@@ -80,6 +80,15 @@ class NoteManager : public QObject
     int removeDir(const QString &dir);
 
     /******************************************************************************
+     * Function: removeTag
+     * Return:
+     * 0 : succeed
+     * 1 : no such dir
+     * 2 : other exceptions
+     *****************************************************************************/
+    int removeTag(const QString &dir);
+
+    /******************************************************************************
      * Function: renameNote
      * Return:
      * 0 : succeed

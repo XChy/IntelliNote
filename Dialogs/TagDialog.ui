@@ -6,25 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>258</height>
+    <width>430</width>
+    <height>261</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>标签</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Tags</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="everload_tags::Tags" name="tagEdit" native="true"/>
-   </item>
-   <item row="1" column="0" colspan="2">
+   <item row="1" column="1" colspan="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -33,6 +23,23 @@
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QPushButton" name="autoTagButton">
+     <property name="text">
+      <string>自动标签</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Tags</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1" colspan="2">
+    <widget class="everload_tags::Tags" name="tagEdit" native="true"/>
    </item>
   </layout>
  </widget>

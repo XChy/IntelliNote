@@ -92,7 +92,6 @@
      <addaction name="separator"/>
      <addaction name="actionMarkdown"/>
      <addaction name="actionPDF"/>
-     <addaction name="actionHTML"/>
     </widget>
     <addaction name="actionNewNote"/>
     <addaction name="actionImportNote"/>

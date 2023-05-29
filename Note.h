@@ -41,6 +41,11 @@ struct Note {
         return input;
     }
 
+    bool operator==(const Note& other) const
+    {
+        return name == other.name && dir == other.dir;
+    }
+
    public:
     Note();
 

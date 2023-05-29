@@ -131,10 +131,6 @@ MainWindow::MainWindow(QWidget* parent)
         file.close();
     });
 
-    connect(ui->actionHTML, &QAction::triggered, [this]() {
-
-    });
-
     connect(ui->actionPDF, &QAction::triggered, [this]() {
         QString path = QFileDialog::getSaveFileName(this, tr("导出为PDF"));
         ui->viewer->printToPdf(path);
@@ -223,6 +219,8 @@ void MainWindow::onGenerateSummary()
     dialog.onGenerate();
     dialog.exec();
 }
+
+void MainWindow::onContinueWriting() {}
 
 void MainWindow::onNewNote()
 {
@@ -331,8 +329,7 @@ void MainWindow::onMenuForManager(const QPoint& pos)
             });
 
             menuForManager->addAction(tr("Remove"), [this, curIndex]() {
-                // TODO: Question Message Box
-                noteManager->removeDir(textForIndex(curIndex));
+                noteManager->removeTag(textForIndex(curIndex));
             });
         } else if (isNoteBooksItem(curIndex)) {
             menuForManager->addAction(tr("New Notebook"), [this, curIndex]() {
@@ -368,13 +365,20 @@ bool MainWindow::eventFilter(QObject* w, QEvent* e)
             ui->textEdit->setPlainText(ui->textEdit->toPlainText());
             return true;
         }
+
+        if (key_e->modifiers() == Qt::ControlModifier &&
+            key_e->key() == Qt::Key_L) {
+            noteManager->saveNote(currentNote, ui->textEdit->toPlainText());
+            ui->textEdit->setPlainText(ui->textEdit->toPlainText());
+            return true;
+        }
     }
     return false;
 }
 
 void MainWindow::switchNote(const Note& note)
 {
-    if (note.name == currentNote.name && note.dir == currentNote.dir) return;
+    if (note == currentNote) return;
 
     if (ui->textEdit->document()->isModified()) {
         if (QMessageBox::question(

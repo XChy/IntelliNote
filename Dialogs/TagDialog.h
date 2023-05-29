@@ -3,6 +3,7 @@
 
 #include <qlist.h>
 #include <QDialog>
+#include "GPTSession.h"
 #include "NoteManager.h"
 
 namespace Ui {
@@ -30,6 +31,8 @@ class TagDialog : public QDialog
                        NoteManager *manager = nullptr, Note note = Note());
 
     void setCompletion(const QList<QString> &tags);
+    void onAutoTag();
+    void onCompleteAutoTag(QString tags_str);
 
     QStringList tags() const;
     QList<QString> tagsToRemove() const;
@@ -40,7 +43,9 @@ class TagDialog : public QDialog
    private:
     Ui::TagDialog *ui;
     NoteManager *manager;
+    GPTSession *gptSession;
     Note note;
+    QString promptPattern;
 };
 
 #endif  // TAGDIALOG_H
