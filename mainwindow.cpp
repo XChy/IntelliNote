@@ -45,7 +45,8 @@ MainWindow::MainWindow(QWidget* parent)
       importNoteDialog(new ImportNoteDialog(this, noteManager)),
       model(new QStandardItemModel(this)),
       notebooks_item(new QStandardItem(tr("NoteBooks"))),
-      tags_item(new QStandardItem(tr("Tags")))
+      tags_item(new QStandardItem(tr("Tags"))),
+      hasVirtualText(false)
 {
     QFile f(":qdarkstyle/dark/darkstyle.qss");
     QFile f2(":qlightstyle/light/lightstyle.qss");
@@ -273,10 +274,12 @@ void MainWindow::onFetchContinualContent(const QString& content)
 
 void MainWindow::onCompleteVirtualText()
 {
-    hasVirtualText = false;
-    ui->textEdit->clear();
-    ui->textEdit->appendPlainText(oldContent);
-    ui->textEdit->appendPlainText(continualContent);
+    if (hasVirtualText) {
+        hasVirtualText = false;
+        ui->textEdit->clear();
+        ui->textEdit->appendPlainText(oldContent);
+        ui->textEdit->appendPlainText(continualContent);
+    }
 }
 void MainWindow::onDiscardVirtualText()
 {
@@ -455,6 +458,8 @@ bool MainWindow::eventFilter(QObject* w, QEvent* e)
 void MainWindow::switchNote(const Note& note)
 {
     if (note == currentNote) return;
+
+    onDiscardVirtualText();
 
     if (ui->textEdit->document()->isModified()) {
         if (QMessageBox::question(
