@@ -4,8 +4,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
-static const char *default_api_key =
-    "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";
+static const char *default_api_key = "";
 static const int maxTokens = 100;
 
 class GPTSession : public QObject
